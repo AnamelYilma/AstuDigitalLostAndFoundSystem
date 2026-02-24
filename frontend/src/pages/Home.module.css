@@ -1,0 +1,186 @@
+/* frontend/src/pages/Home.module.css */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  font-size: 24px;
+  background-color: var(--primary);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.logoText {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.searchInput {
+  padding: 12px 15px;
+  border: none;
+  font-size: 16px;
+  width: 250px;
+  outline: none;
+}
+
+.searchButton {
+  padding: 12px 15px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.loginButton,
+.registerButton {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loginButton {
+  background: white;
+  border: 1px solid var(--border);
+}
+
+.registerButton {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 5%;
+  background-color: var(--light);
+}
+
+.heroTitle {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.heroHighlight {
+  color: var(--primary);
+  font-size: 52px;
+}
+
+.heroDescription {
+  font-size: 20px;
+  color: #4a5568;
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.heroButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.browseButton {
+  padding: 16px 30px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2);
+  transition: transform 0.3s;
+}
+
+.browseButton:hover {
+  transform: translateY(-3px);
+}
+
+.reportButton {
+  padding: 16px 30px;
+  background: white;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.reportButton:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 60px 5%;
+}
+
+.featureCard {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+}
+
+.featureIcon {
+  font-size: 40px;
+  margin-bottom: 20px;
+  color: var(--primary);
+}
+
+.featureTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.featureDesc {
+  color: #4a5568;
+  font-size: 16px;
+}

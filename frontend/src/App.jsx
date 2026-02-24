@@ -1,20 +1,26 @@
 // frontend/src/App.jsx
-import { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import Report from './pages/Report';
+import ProtectedRoute from './utils/ProtectedRoute';
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  // Check if user is logged in (simplified)
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
-
-  if (!user) return <Login onLogin={setUser} />;
-
-  return <Dashboard user={user} onLogout={() => setUser(null)} />;
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/report" element={<Report />} />
+      </Route>
+      
+      {/* Fallback */}
+      <Route path="*" element={<Home />} />
+    </Routes>
+  );
 }
 
 export default App;
