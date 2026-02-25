@@ -1,52 +1,53 @@
-// frontend/src/pages/Login.jsx
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login, error, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/report');
+    try {
+      await login(email, password);
+      navigate('/');
+    } catch (err) {
+      // Error handled in context
+    }
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.header}>Login to ASTU Lost & Found</h1>
-        
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="email"
-            placeholder="Email (student@astu.edu)"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-            required
-          />
-          
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-            required
-          />
-          
-          <button type="submit" className={styles.button}>
-            Login
-          </button>
-        </form>
-        
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <h2>Lost & Found Login</h2>
+        {error && <div className={styles.error}>{error}</div>}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
         <div className={styles.info}>
-          <p>Student account: student@astu.edu / any password</p>
-          <p>Admin account: admin@astu.edu / any password</p>
+          <p>Demo Admin: admin@example.com / admin123</p>
+          <p>Demo User: user@example.com / user123</p>
         </div>
-      </div>
+      </form>
     </div>
   );
-}
+};
+
+export default Login;

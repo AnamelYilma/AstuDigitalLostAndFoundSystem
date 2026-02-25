@@ -1,0 +1,1 @@
+dir "c:\continer\work\code\ASTU PROJECT\ASTU stem\AstuDigitalLostAndFoundSystem\frontend\src\pages"

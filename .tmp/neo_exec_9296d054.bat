@@ -1,0 +1,1 @@
+type "c:\continer\work\code\ASTU PROJECT\ASTU stem\AstuDigitalLostAndFoundSystem\backend\main.go"

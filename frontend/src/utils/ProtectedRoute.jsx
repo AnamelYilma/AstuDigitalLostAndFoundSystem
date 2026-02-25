@@ -1,26 +1,24 @@
-// frontend/src/utils/ProtectedRoute.jsx
-import { Navigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function ProtectedRoute() {
-  const { user, loading } = useAuth();
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+    const { user, loading } = useAuth();
+    const location = useLocation();
 
-  if (loading) {
-    return (
-      <div style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center' 
-      }}>
-        Loading...
-      </div>
-    );
-  }
+    if (loading) {
+        return <div>Loading session...</div>;
+    }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!user) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
-  return <Outlet />;
-}
+    if (adminOnly && user.role !== 'admin') {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
+
+export default ProtectedRoute;

@@ -1,78 +1,79 @@
-// frontend/src/pages/Home.jsx
-import styles from './Home.module.css';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
-export default function Home() {
+const Home = () => {
+  const { user, logout } = useAuth();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const res = await api.get('/items');
+        setItems(res.data);
+      } catch (err) {
+        console.error('Failed to fetch items');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      await api.delete(`/items/${id}`);
+      setItems(items.filter(item => item.id !== id));
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to delete');
+    }
+  };
+
   return (
-    <div className={styles.container}>
-      {/* HEADER */}
-      <header className={styles.header}>
-        <div className={styles.logo}>
-          <div className={styles.logoIcon}>📦</div>
-          <h1 className={styles.logoText}>ASTU Lost&Found</h1>
-        </div>
-        
-        <div className={styles.headerActions}>
-          <div className={styles.searchBar}>
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className={styles.searchInput}
-            />
-            <button className={styles.searchButton}>🔍</button>
-          </div>
-          
-          <button className={styles.loginButton}>👤 Login</button>
-          <button className={styles.registerButton}>📝 Register</button>
+    <div style={{ padding: '20px' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Lost & Found Dashboard</h1>
+        <div>
+          <span>Welcome, <strong>{user?.email}</strong> ({user?.role})</span>
+          <button onClick={logout} style={{ marginLeft: '10px' }}>Logout</button>
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>
-          Lost something? <br />
-          <span className={styles.heroHighlight}>We'll help you find it.</span>
-        </h1>
-        
-        <p className={styles.heroDescription}>
-          A centralized digital system for ASTU students to report, search, and track lost and found items securely.
-        </p>
-        
-        <div className={styles.heroButtons}>
-          <button className={styles.browseButton}>
-            🔍 Browse Items
-          </button>
-          <button className={styles.reportButton}>
-            ➕ Report Found Item
-          </button>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section className={styles.features}>
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>🔍</div>
-          <h2 className={styles.featureTitle}>Search & Filter</h2>
-          <p className={styles.featureDesc}>
-            Find your lost items with powerful search and filtering
-          </p>
-        </div>
-        
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>🛡️</div>
-          <h2 className={styles.featureTitle}>Secure Claims</h2>
-          <p className={styles.featureDesc}>
-            Verified claims process to keep your items safe
-          </p>
-        </div>
-        
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>✏️</div>
-          <h2 className={styles.featureTitle}>Easy Reporting</h2>
-          <p className={styles.featureDesc}>
-            Report lost or found items in seconds
-          </p>
-        </div>
+      <section>
+        <h2>Items List</h2>
+        {loading ? <p>Loading items...</p> : (
+          <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(item => (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
+                  <td>{item.title}</td>
+                  <td>{item.type}</td>
+                  <td>{item.status}</td>
+                  <td>
+                    {user?.role === 'admin' && (
+                      <button onClick={() => handleDelete(item.id)} style={{ color: 'red' }}>Delete</button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
     </div>
   );
-}
+};
+
+export default Home;

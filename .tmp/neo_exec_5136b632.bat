@@ -1,0 +1,1 @@
+cd /d "c:\continer\work\code\ASTU PROJECT\ASTU stem\AstuDigitalLostAndFoundSystem\backend" && go build -o server.exe main.go

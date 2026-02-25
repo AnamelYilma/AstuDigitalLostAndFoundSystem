@@ -11,6 +11,12 @@ Calculators
 USB drives
 Lab coats
 Books
+mobile
+PC
+textbook
+eysglass
+bag
+cloth
 
 Currently, there is no centralized digital system to report, search, or track lost and found items. This project aims to create a structured and secure digital solution for the campus community.
 
@@ -54,16 +60,6 @@ Core Functionalities
 👨‍💼 Admin approval/rejection workflow
 📊 Dashboard statistics (total lost, found, claimed, etc.)
 
-📱 App Development Version Requirements
-
-Students choosing mobile development must implement:
-User authentication
-Post lost/found item
-Upload image
-Search & filter
-Claim request system
-Notification when claim is approved/rejected
-Profile page with item history
 
 
 🔐 Cyber Security Requirements
@@ -89,14 +85,3 @@ One possible vulnerability
 How it could be exploited
 
 How it was prevented
-
-
-📦 Deliverables (1st & 2nd Year)
-
-Source code repository (GitHub or equivalent)
-
-Working demo (local or deployed)
-
-We don't need your perfection, we need your dedication and performance
-
-10–15 minute live presentation

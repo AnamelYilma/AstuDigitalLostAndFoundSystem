@@ -1,0 +1,1 @@
+cd /d "c:\continer\work\code\ASTU PROJECT\ASTU stem\AstuDigitalLostAndFoundSystem\backend" && go get github.com/gin-gonic/gin github.com/golang-jwt/jwt/v5 golang.org/x/crypto/bcrypt github.com/gin-contrib/cors && go mod tidy
