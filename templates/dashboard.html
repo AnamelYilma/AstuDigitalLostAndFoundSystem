@@ -1,0 +1,34 @@
+<!-- templates/dashboard.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="dashboard">
+    <h2>Welcome, {{ .user.Name }}!</h2>
+    <p>Role: {{ .user.Role }}</p>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_lost }}</div>
+            <div>Lost Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_found }}</div>
+            <div>Found Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_claims }}</div>
+            <div>Total Claims</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.pending_claims }}</div>
+            <div>Pending Claims</div>
+        </div>
+    </div>
+    
+    <div class="dashboard-actions">
+        <a href="/report?type=lost" class="btn btn-primary">Report Lost Item</a>
+        <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
+        <a href="/search" class="btn btn-secondary">Search Items</a>
+    </div>
+</div>
+{{ end }}

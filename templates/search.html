@@ -1,0 +1,41 @@
+<!-- templates/search.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="search-page">
+    <h2>Search Items</h2>
+    
+    <form method="GET" action="/items" class="search-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="id">ID Card</option>
+                    <option value="books">Books</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" placeholder="e.g., Library">
+            </div>
+            
+            <div class="form-group">
+                <label>Type</label>
+                <select name="type">
+                    <option value="">All Items</option>
+                    <option value="lost">Lost Only</option>
+                    <option value="found">Found Only</option>
+                </select>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+{{ end }}

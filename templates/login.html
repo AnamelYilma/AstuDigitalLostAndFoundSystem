@@ -1,0 +1,34 @@
+<!-- templates/login.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="auth-form">
+    <h2>Login</h2>
+    
+    {{ if .error }}
+    <div class="error">{{ .error }}</div>
+    {{ end }}
+    
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="student@astu.edu">
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    
+    <p class="auth-link">Don't have an account? <a href="/register">Register</a></p>
+    
+    <div class="demo-credentials">
+        <p><strong>Demo Credentials:</strong></p>
+        <p>Student: student@astu.edu / any password</p>
+        <p>Admin: admin@astu.edu / admin123</p>
+    </div>
+</div>
+{{ end }}

@@ -1,0 +1,69 @@
+<!-- templates/report.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="report-form">
+    <h2>Report {{ if eq .type "lost" }}Lost{{ else }}Found{{ end }} Item</h2>
+    
+    {{ if .error }}
+    <div class="error">{{ .error }}</div>
+    {{ end }}
+    
+    <form method="POST" action="/report" enctype="multipart/form-data">
+        <input type="hidden" name="type" value="{{ .type }}">
+        
+        <div class="form-group">
+            <label>Category *</label>
+            <select name="category" required>
+                <option value="electronics">Electronics</option>
+                <option value="id">ID Card</option>
+                <option value="books">Books</option>
+                <option value="clothing">Clothing</option>
+                <option value="accessories">Accessories</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Item Name *</label>
+            <input type="text" name="title" required placeholder="e.g., HP Calculator">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Color</label>
+                <input type="text" name="color" placeholder="e.g., Black">
+            </div>
+            
+            <div class="form-group">
+                <label>Brand</label>
+                <input type="text" name="brand" placeholder="e.g., HP">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Location *</label>
+            <input type="text" name="location" required placeholder="e.g., Library, Room 201">
+        </div>
+        
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date" value="{{ now }}">
+        </div>
+        
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" rows="4" placeholder="Describe your item..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Photo</label>
+            <input type="file" name="image" accept="image/*">
+            <small>Max size: 5MB (JPG, PNG only)</small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit Report</button>
+        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{{ end }}

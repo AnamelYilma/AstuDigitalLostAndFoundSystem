@@ -1,0 +1,57 @@
+<!-- templates/admin/dashboard.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="admin-dashboard">
+    <h2>Admin Dashboard</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_lost }}</div>
+            <div>Lost Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_found }}</div>
+            <div>Found Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.total_claims }}</div>
+            <div>Total Claims</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.pending_claims }}</div>
+            <div>Pending</div>
+        </div>
+    </div>
+    
+    <div class="admin-actions">
+        <a href="/admin/claims" class="btn btn-primary">Manage Claims ({{ .stats.pending_claims }} pending)</a>
+    </div>
+    
+    <h3>Recent Claims</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Claimant</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .claims }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>{{ .Item.Title }}</td>
+                <td>{{ .User.Name }}</td>
+                <td><span class="badge {{ .Status }}">{{ .Status }}</span></td>
+                <td>{{ .CreatedAt.Format "Jan 02, 2006" }}</td>
+                <td><a href="/admin/claims" class="btn-small">View</a></td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+{{ end }}

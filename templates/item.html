@@ -1,0 +1,46 @@
+<!-- templates/item.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="item-detail">
+    <div class="item-header">
+        <h2>{{ .item.Title }}</h2>
+        <span class="badge {{ .item.Type }}">{{ .item.Type }}</span>
+    </div>
+    
+    <div class="item-content">
+        {{ if .item.Image }}
+        <div class="item-image-large">
+            <img src="{{ .item.Image }}" alt="{{ .item.Title }}">
+        </div>
+        {{ end }}
+        
+        <div class="item-info">
+            <p><strong>Category:</strong> {{ .item.Category }}</p>
+            <p><strong>Color:</strong> {{ .item.Color }}</p>
+            <p><strong>Brand:</strong> {{ .item.Brand }}</p>
+            <p><strong>Location:</strong> {{ .item.Location }}</p>
+            <p><strong>Date:</strong> {{ .item.Date }}</p>
+            <p><strong>Reported by:</strong> {{ .item.User.Name }}</p>
+            <p><strong>Description:</strong></p>
+            <p>{{ .item.Description }}</p>
+        </div>
+    </div>
+    
+    {{ if and .user (ne .user.ID .item.UserID) (eq .item.Status "open") }}
+    <div class="claim-section">
+        <h3>Claim This Item</h3>
+        <form method="POST" action="/claim">
+            <input type="hidden" name="item_id" value="{{ .item.ID }}">
+            <div class="form-group">
+                <label>Why do you think this is yours?</label>
+                <textarea name="description" required rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Claim</button>
+        </form>
+    </div>
+    {{ end }}
+    
+    <a href="/search" class="btn btn-secondary">Back to Search</a>
+</div>
+{{ end }}

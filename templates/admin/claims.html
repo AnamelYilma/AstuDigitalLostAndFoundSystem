@@ -1,0 +1,51 @@
+<!-- templates/admin/claims.html -->
+{{ template "layout.html" . }}
+
+{{ define "content" }}
+<div class="admin-claims">
+    <h2>Manage Claims</h2>
+    
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Claimant</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .claims }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>
+                    <strong>{{ .Item.Title }}</strong><br>
+                    <small>{{ .Item.Type }} - {{ .Item.Category }}</small>
+                </td>
+                <td>{{ .User.Name }}<br><small>{{ .User.Email }}</small></td>
+                <td>{{ .Description }}</td>
+                <td>
+                    <span class="badge {{ .Status }}">{{ .Status }}</span>
+                </td>
+                <td>{{ .CreatedAt.Format "Jan 02, 2006" }}</td>
+                <td>
+                    {{ if eq .Status "pending" }}
+                    <form method="POST" action="/admin/claims/update" class="inline-form">
+                        <input type="hidden" name="claim_id" value="{{ .ID }}">
+                        <input type="text" name="remarks" placeholder="Remarks">
+                        <button type="submit" name="status" value="approved" class="btn-small btn-success">Approve</button>
+                        <button type="submit" name="status" value="rejected" class="btn-small btn-danger">Reject</button>
+                    </form>
+                    {{ else }}
+                    {{ .AdminRemarks }}
+                    {{ end }}
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+{{ end }}
