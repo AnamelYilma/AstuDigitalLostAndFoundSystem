@@ -5,5 +5,6 @@ import "./styles/sidebar.css";
 import "./styles/components.css";
 
 export default function App() {
-  return <UserDashboard />;
+  return <>
+  <UserDashboard /> </>
 }
