@@ -1,6 +1,6 @@
 ## This Is ASTU Steam Project BY Anamel Yilma .Simple Startage But Effective way
 
-# 🧠 1. Big Architecture View (Simple)
+# 🧠 1. Big Architecture View 
 
 You are building a classic **MVC-style backend web app**:
 
@@ -22,7 +22,7 @@ HTML is rendered from Gin.
 
 ---
 
-# 📁 2. Project Folder Structure (Production Style)
+# 📁 2. Project Folder Structure 
 
 This is what I expect from you:
 ```
@@ -75,7 +75,7 @@ If you don’t follow structure like this, you are building toy project.
 
 ---
 
-# 🔥 3. What Each Folder Means (Understand This Deeply)
+# 🔥 3. What Each Folder Means 
 
 ## `main.go`
 
@@ -307,4 +307,3 @@ Render HTML
 
 
 
-Be precise.
