@@ -1,0 +1,10 @@
+<!-- templates/error.html -->
+{{ template "layout.html" . }}
+
+{{ define "error_content" }}
+<div class="error-page">
+    <h2>{{ .title }}</h2>
+    <div class="error">{{ .error }}</div>
+    <a href="/" class="btn btn-secondary">Back Home</a>
+</div>
+{{ end }}

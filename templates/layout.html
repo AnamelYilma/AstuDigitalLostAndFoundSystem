@@ -29,7 +29,29 @@
     </nav>
     
     <main class="container">
-        {{ template "content" . }}
+        {{ if eq .content_template "index_content" }}
+            {{ template "index_content" . }}
+        {{ else if eq .content_template "login_content" }}
+            {{ template "login_content" . }}
+        {{ else if eq .content_template "register_content" }}
+            {{ template "register_content" . }}
+        {{ else if eq .content_template "dashboard_content" }}
+            {{ template "dashboard_content" . }}
+        {{ else if eq .content_template "report_content" }}
+            {{ template "report_content" . }}
+        {{ else if eq .content_template "search_content" }}
+            {{ template "search_content" . }}
+        {{ else if eq .content_template "items_content" }}
+            {{ template "items_content" . }}
+        {{ else if eq .content_template "item_content" }}
+            {{ template "item_content" . }}
+        {{ else if eq .content_template "admin_dashboard_content" }}
+            {{ template "admin_dashboard_content" . }}
+        {{ else if eq .content_template "admin_claims_content" }}
+            {{ template "admin_claims_content" . }}
+        {{ else if eq .content_template "error_content" }}
+            {{ template "error_content" . }}
+        {{ end }}
     </main>
     
     <footer class="footer">

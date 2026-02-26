@@ -1,4 +1,3 @@
-// internal/service/auth_service.go
 package service
 
 import (
@@ -6,6 +5,7 @@ import (
     "lostfound/internal/model"
     "lostfound/internal/repository"
     "lostfound/pkg/utils"
+    // "github.com/google/uuid" 
 )
 
 type AuthService struct {
@@ -19,24 +19,21 @@ func NewAuthService() *AuthService {
 }
 
 func (s *AuthService) Register(name, email, password string) (*model.User, error) {
-    // Check if user exists
     existingUser, _ := s.userRepo.FindByEmail(email)
     if existingUser != nil && existingUser.ID > 0 {
         return nil, errors.New("email already registered")
     }
     
-    // Hash password
     hashedPassword, err := utils.HashPassword(password)
     if err != nil {
         return nil, err
     }
     
-    // Create user
     user := &model.User{
         Name:     name,
         Email:    email,
         Password: hashedPassword,
-        Role:     "student", // Default role
+        Role:     "student",
     }
     
     err = s.userRepo.Create(user)
@@ -44,13 +41,11 @@ func (s *AuthService) Register(name, email, password string) (*model.User, error
 }
 
 func (s *AuthService) Login(email, password string) (*model.User, error) {
-    // Find user
     user, err := s.userRepo.FindByEmail(email)
     if err != nil {
         return nil, errors.New("invalid email or password")
     }
     
-    // Check password
     if !utils.CheckPasswordHash(password, user.Password) {
         return nil, errors.New("invalid email or password")
     }
