@@ -2,3 +2,5 @@
 /Plane and Description.md
 /static/uploads
 report to learn.md
+.env
+!.env.example

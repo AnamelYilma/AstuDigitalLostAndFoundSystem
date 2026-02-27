@@ -19,14 +19,14 @@ func NewAuthHandler() *AuthHandler {
 }
 
 func (h *AuthHandler) ShowLogin(c *gin.Context) {
-	c.HTML(http.StatusOK, "login.html", gin.H{
+	renderHTML(c, http.StatusOK, "login.html", gin.H{
 		"title":            "Login",
 		"content_template": "login_content",
 	})
 }
 
 func (h *AuthHandler) ShowRegister(c *gin.Context) {
-	c.HTML(http.StatusOK, "register.html", gin.H{
+	renderHTML(c, http.StatusOK, "register.html", gin.H{
 		"title":            "Register",
 		"content_template": "register_content",
 	})
@@ -38,7 +38,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	user, err := h.authService.Login(studentID, password)
 	if err != nil {
-		c.HTML(http.StatusOK, "login.html", gin.H{
+		renderHTML(c, http.StatusOK, "login.html", gin.H{
 			"title":            "Login",
 			"error":            err.Error(),
 			"content_template": "login_content",
@@ -65,7 +65,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	user, err := h.authService.Register(name, studentID, phone, password)
 	if err != nil {
-		c.HTML(http.StatusOK, "register.html", gin.H{
+		renderHTML(c, http.StatusOK, "register.html", gin.H{
 			"title":            "Register",
 			"error":            err.Error(),
 			"content_template": "register_content",

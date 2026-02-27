@@ -17,6 +17,9 @@
                 {{ if .user }}
                     <a href="/report?type=lost">Report Lost</a>
                     <a href="/report?type=found">Report Found</a>
+                    <a href="/notifications">
+                        Notifications{{ if gt .unread_count 0 }} ({{ .unread_count }}){{ end }}
+                    </a>
                     <a href="/logout">Logout ({{ .user.Name }})</a>
                 {{ else }}
                     <a href="/login">Login</a>
@@ -43,6 +46,8 @@
             {{ template "items_content" . }}
         {{ else if eq .content_template "item_content" }}
             {{ template "item_content" . }}
+        {{ else if eq .content_template "notifications_content" }}
+            {{ template "notifications_content" . }}
         {{ else if eq .content_template "admin_dashboard_content" }}
             {{ template "admin_dashboard_content" . }}
         {{ else if eq .content_template "admin_claims_content" }}

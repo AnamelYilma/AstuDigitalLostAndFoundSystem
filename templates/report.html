@@ -10,6 +10,7 @@
     {{ end }}
     
     <form method="POST" action="/report" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
         <input type="hidden" name="type" value="{{ .type }}">
         
         <div class="form-group">
@@ -66,9 +67,9 @@
         </div>
         
         <div class="form-group">
-            <label>Photo</label>
-            <input type="file" name="image" accept="image/*">
-            <small>Max size: 5MB (JPG, PNG only)</small>
+            <label>Photo {{ if eq .type "found" }}*{{ end }}</label>
+            <input type="file" name="image" accept="image/*" {{ if eq .type "found" }}required{{ end }}>
+            <small>Max size: 5MB (JPG, PNG only). Found report requires photo; lost report photo is optional.</small>
         </div>
         
         <button type="submit" class="btn btn-primary">Submit Report</button>

@@ -35,6 +35,26 @@ var colorOptions = []string{
 	"other",
 }
 
+var itemTypes = []string{
+	"lost",
+	"found",
+}
+
+var itemCategories = []string{
+	"electronics",
+	"id",
+	"books",
+	"clothing",
+	"accessories",
+	"other",
+}
+
+var approvalStatuses = []string{
+	"pending",
+	"approved",
+	"rejected",
+}
+
 func ASTULocations() []string {
 	return astuLocations
 }
@@ -54,6 +74,33 @@ func IsStandardColor(color string) bool {
 
 func KnownNonOtherColors() []string {
 	return []string{"red", "green", "blue", "yellow", "black", "white", "gray", "brown", "orange", "purple", "pink", "gold", "silver"}
+}
+
+func IsValidItemType(itemType string) bool {
+	for _, t := range itemTypes {
+		if strings.EqualFold(strings.TrimSpace(itemType), t) {
+			return true
+		}
+	}
+	return false
+}
+
+func IsValidCategory(category string) bool {
+	for _, c := range itemCategories {
+		if strings.EqualFold(strings.TrimSpace(category), c) {
+			return true
+		}
+	}
+	return false
+}
+
+func IsValidApprovalStatus(status string) bool {
+	for _, s := range approvalStatuses {
+		if strings.EqualFold(strings.TrimSpace(status), s) {
+			return true
+		}
+	}
+	return false
 }
 
 func IsValidASTULocation(location string) bool {

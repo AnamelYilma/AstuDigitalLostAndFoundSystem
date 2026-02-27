@@ -51,6 +51,12 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 	if itemType, ok := filters["type"]; ok && itemType != "" {
 		query = query.Where("type = ?", itemType)
 	}
+	if dateFrom, ok := filters["date_from"]; ok && dateFrom != "" {
+		query = query.Where("\"date\" >= ?", dateFrom)
+	}
+	if dateTo, ok := filters["date_to"]; ok && dateTo != "" {
+		query = query.Where("\"date\" <= ?", dateTo)
+	}
 	if approvalStatus, ok := filters["approval_status"]; ok && approvalStatus != "" {
 		query = query.Where("approval_status = ?", approvalStatus)
 	}
@@ -113,6 +119,22 @@ func (r *ItemRepository) FindClaimByID(id uint) (*model.Claim, error) {
 	return &claim, err
 }
 
+func (r *ItemRepository) HasActiveClaimByUser(itemID, userID uint) (bool, error) {
+	var count int64
+	err := database.DB.Model(&model.Claim{}).
+		Where("item_id = ? AND user_id = ? AND status IN ?", itemID, userID, []string{"pending", "approved"}).
+		Count(&count).Error
+	return count > 0, err
+}
+
+func (r *ItemRepository) HasApprovedClaimForUser(itemID, userID uint) (bool, error) {
+	var count int64
+	err := database.DB.Model(&model.Claim{}).
+		Where("item_id = ? AND user_id = ? AND status = ?", itemID, userID, "approved").
+		Count(&count).Error
+	return count > 0, err
+}
+
 func (r *ItemRepository) FindByUserID(userID uint) ([]model.Item, error) {
 	var items []model.Item
 	err := database.DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&items).Error
@@ -127,4 +149,24 @@ func (r *ItemRepository) FindAllItemsForAdmin() ([]model.Item, error) {
 
 func (r *ItemRepository) DeleteItem(itemID uint) error {
 	return database.DB.Delete(&model.Item{}, itemID).Error
+}
+
+func (r *ItemRepository) CreateNotification(notification *model.Notification) error {
+	return database.DB.Create(notification).Error
+}
+
+func (r *ItemRepository) FindNotificationsByUserID(userID uint) ([]model.Notification, error) {
+	var notifications []model.Notification
+	err := database.DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&notifications).Error
+	return notifications, err
+}
+
+func (r *ItemRepository) MarkNotificationsRead(userID uint) error {
+	return database.DB.Model(&model.Notification{}).Where("user_id = ? AND is_read = ?", userID, false).Update("is_read", true).Error
+}
+
+func (r *ItemRepository) CountUnreadNotifications(userID uint) (int64, error) {
+	var count int64
+	err := database.DB.Model(&model.Notification{}).Where("user_id = ? AND is_read = ?", userID, false).Count(&count).Error
+	return count, err
 }

@@ -8,8 +8,8 @@ import (
 type User struct {
 	ID        uint           `gorm:"primarykey" json:"id"`
 	Name      string         `gorm:"size:100;not null" json:"name"`
-	StudentID string         `gorm:"size:30;index" json:"student_id"`
-	Phone     string         `gorm:"size:20" json:"phone"`
+	StudentID string         `gorm:"size:30;uniqueIndex;not null" json:"student_id"`
+	Phone     string         `gorm:"size:20;not null" json:"phone"`
 	Email     string         `gorm:"size:100;uniqueIndex;not null" json:"email"`
 	Password  string         `gorm:"size:255;not null" json:"-"`
 	Role      string         `gorm:"size:20;default:'student'" json:"role"`

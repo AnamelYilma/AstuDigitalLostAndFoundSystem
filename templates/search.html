@@ -53,10 +53,22 @@
                 <label>Status</label>
                 <select name="status">
                     <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
+                    {{ if .is_admin }}
+                    <option value="pending">Pending</option>
                     <option value="rejected">Rejected</option>
+                    {{ end }}
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date (From Day)</label>
+                <input type="date" name="date_from">
+            </div>
+
+            <div class="form-group">
+                <label>Date To (Optional)</label>
+                <input type="date" name="date_to">
             </div>
         </div>
         

@@ -10,7 +10,9 @@
         Category: {{ if index .filters "category" }}{{ index .filters "category" }}{{ else }}all{{ end }} |
         Location: {{ if index .filters "location" }}{{ index .filters "location" }}{{ else }}all{{ end }} |
         Color: {{ if .selected_colors }}{{ range $i, $c := .selected_colors }}{{ if $i }}, {{ end }}{{ $c }}{{ end }}{{ else }}all{{ end }} |
-        Status: {{ if index .filters "approval_status" }}{{ index .filters "approval_status" }}{{ else }}all{{ end }}
+        Status: {{ if index .filters "approval_status" }}{{ index .filters "approval_status" }}{{ else }}all{{ end }} |
+        Date From: {{ if index .filters "date_from" }}{{ index .filters "date_from" }}{{ else }}all{{ end }} |
+        Date To: {{ if index .filters "date_to" }}{{ index .filters "date_to" }}{{ else }}all{{ end }}
     </p>
     
     {{ if .items }}
@@ -27,7 +29,14 @@
                 <h3>{{ .Title }}</h3>
                 <p><strong>Type:</strong> {{ .Type }}</p>
                 <p><strong>Category:</strong> {{ .Category }}</p>
-                <p><strong>Location:</strong> {{ .Location }}</p>
+                <p>
+                    <strong>Location:</strong>
+                    {{ if and (eq .Type "found") (not $.is_admin) }}
+                        Hidden until admin-approved request
+                    {{ else }}
+                        {{ .Location }}
+                    {{ end }}
+                </p>
                 <p><strong>Date:</strong> {{ .Date }}</p>
                 <p><strong>Status:</strong> {{ .Status }}</p>
                 <p><strong>Approval:</strong> {{ .ApprovalStatus }}</p>

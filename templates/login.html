@@ -10,6 +10,7 @@
     {{ end }}
     
     <form method="POST" action="/login">
+        <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
         <div class="form-group">
             <label>Student ID</label>
             <input type="text" name="student_id" required placeholder="ugr/38923/18">

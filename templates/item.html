@@ -19,45 +19,62 @@
             <p><strong>Category:</strong> {{ .item.Category }}</p>
             <p><strong>Color:</strong> {{ .item.Color }}</p>
             <p><strong>Brand:</strong> {{ .item.Brand }}</p>
-            <p><strong>Location:</strong> {{ .item.Location }}</p>
+            <p>
+                <strong>Location:</strong>
+                {{ if and (eq .item.Type "found") (not .show_private) }}
+                    Hidden until admin approves your request
+                {{ else }}
+                    {{ .item.Location }}
+                {{ end }}
+            </p>
             <p><strong>Date:</strong> {{ .item.Date }}</p>
-            <p><strong>Reported by:</strong> {{ .item.User.Name }}</p>
-            <p><strong>Contact:</strong> {{ .item.User.StudentID }} / {{ .item.User.Phone }}</p>
+            <p>
+                <strong>Reported by:</strong>
+                {{ if .show_private }}
+                    {{ .item.User.Name }}
+                {{ else }}
+                    Hidden until admin-approved request
+                {{ end }}
+            </p>
+            <p>
+                <strong>Contact:</strong>
+                {{ if .show_private }}
+                    {{ .item.User.StudentID }} / {{ .item.User.Phone }}
+                {{ else }}
+                    Available in notifications after admin approval
+                {{ end }}
+            </p>
             <p><strong>Approval:</strong> {{ .item.ApprovalStatus }}</p>
             <p><strong>Description:</strong></p>
             <p>{{ .item.Description }}</p>
         </div>
     </div>
-    
-    {{ if and (eq .item.Type "found") .user (ne .user.ID .item.UserID) (eq .item.Status "open") (eq .item.ApprovalStatus "approved") }}
+
+    {{ if .can_request }}
     <div class="claim-section">
-        <h3>Claim This Item</h3>
+        <h3>{{ .request_type }}</h3>
         <form method="POST" action="/claim">
+            <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
             <input type="hidden" name="item_id" value="{{ .item.ID }}">
             <div class="form-group">
-                <label>Why do you think this is yours?</label>
+                <label>{{ .request_hint }}</label>
                 <textarea name="description" required rows="3"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Claim</button>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
         </form>
     </div>
     {{ end }}
 
-    {{ if and (eq .item.Type "found") (not .user) }}
+    {{ if and (not .user) (eq .item.ApprovalStatus "approved") (eq .item.Status "open") }}
     <div class="claim-section">
-        <h3>Want to claim this item?</h3>
-        <p>Please login first, then submit your claim.</p>
-        <a href="/login" class="btn btn-primary">Login to Claim</a>
+        <h3>Want to send request for this item?</h3>
+        <p>Please login first, then submit your request.</p>
+        <a href="/login" class="btn btn-primary">Login to Request</a>
     </div>
     {{ end }}
 
-    {{ if eq .item.Type "lost" }}
-    <div class="claim-section">
-        <h3>Did you find this item?</h3>
-        <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
+    <div class="item-actions">
+        <a href="/search" class="btn btn-secondary">Back to Search</a>
     </div>
-    {{ end }}
-    
-    <a href="/search" class="btn btn-secondary">Back to Search</a>
 </div>
 {{ end }}

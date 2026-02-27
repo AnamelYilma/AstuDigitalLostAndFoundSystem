@@ -64,11 +64,19 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 }
 
 func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, brand, location, date, description, imagePath string) (*model.Item, error) {
-	if itemType != "lost" && itemType != "found" {
+	if !IsValidItemType(itemType) {
 		return nil, errors.New("invalid item type")
+	}
+	if !IsValidCategory(category) {
+		return nil, errors.New("invalid category")
 	}
 	if strings.TrimSpace(title) == "" {
 		return nil, errors.New("item title is required")
+	}
+	if strings.TrimSpace(date) != "" {
+		if _, err := time.Parse("2006-01-02", date); err != nil {
+			return nil, errors.New("invalid date format")
+		}
 	}
 
 	item := &model.Item{
@@ -109,19 +117,30 @@ func (s *ItemService) CreateClaim(itemID, userID uint, description string) error
 	if item.ApprovalStatus != "approved" {
 		return errors.New("item is not approved by admin yet")
 	}
-	if item.Type != "found" {
-		return errors.New("you can only claim found items")
-	}
 	if item.Status != "open" {
-		return errors.New("this item is no longer available for claim")
+		return errors.New("this item is no longer open for request")
 	}
 	if strings.TrimSpace(description) == "" {
-		return errors.New("claim description is required")
+		return errors.New("request description is required")
+	}
+
+	hasActive, err := s.itemRepo.HasActiveClaimByUser(itemID, userID)
+	if err != nil {
+		return err
+	}
+	if hasActive {
+		return errors.New("you already have a pending or approved request for this post")
+	}
+
+	requestType := "claim_request"
+	if item.Type == "lost" {
+		requestType = "found_match_request"
 	}
 
 	claim := &model.Claim{
 		ItemID:      itemID,
 		UserID:      userID,
+		RequestType: requestType,
 		Description: description,
 		Status:      "pending",
 	}
@@ -156,6 +175,44 @@ func (s *ItemService) UpdateClaimStatus(claimID uint, status, remarks string) er
 			item.Status = "claimed"
 			_ = s.itemRepo.Update(item)
 		}
+
+		requestTypeLabel := "Claim Request"
+		if claim.RequestType == "found_match_request" {
+			requestTypeLabel = "Found Match Request"
+		}
+
+		posterContact := fmt.Sprintf("%s (%s / %s)", claim.Item.User.Name, claim.Item.User.StudentID, claim.Item.User.Phone)
+		requesterContact := fmt.Sprintf("%s (%s / %s)", claim.User.Name, claim.User.StudentID, claim.User.Phone)
+
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: claim.UserID,
+			Title:  "Request Approved",
+			Message: fmt.Sprintf(
+				"Admin approved your %s for \"%s\". Contact post owner: %s.",
+				requestTypeLabel, claim.Item.Title, posterContact,
+			),
+		})
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: claim.Item.UserID,
+			Title:  "Request Approved On Your Post",
+			Message: fmt.Sprintf(
+				"Admin approved %s on your post \"%s\". Contact requester: %s.",
+				requestTypeLabel, claim.Item.Title, requesterContact,
+			),
+		})
+	} else {
+		reason := strings.TrimSpace(remarks)
+		if reason == "" {
+			reason = "No remarks provided"
+		}
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: claim.UserID,
+			Title:  "Request Rejected",
+			Message: fmt.Sprintf(
+				"Admin rejected your request for \"%s\". Remarks: %s",
+				claim.Item.Title, reason,
+			),
+		})
 	}
 
 	return s.itemRepo.UpdateClaim(claim)
@@ -170,7 +227,7 @@ func (s *ItemService) GetAllItemsForAdmin() ([]model.Item, error) {
 }
 
 func (s *ItemService) UpdateItemApproval(itemID uint, status, remarks string) error {
-	if status != "approved" && status != "rejected" && status != "pending" {
+	if !IsValidApprovalStatus(status) {
 		return errors.New("invalid approval status")
 	}
 
@@ -184,9 +241,62 @@ func (s *ItemService) UpdateItemApproval(itemID uint, status, remarks string) er
 	if status != "approved" {
 		item.Status = "open"
 	}
-	return s.itemRepo.Update(item)
+	if err := s.itemRepo.Update(item); err != nil {
+		return err
+	}
+
+	if status == "approved" {
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: item.UserID,
+			Title:  "Post Approved",
+			Message: fmt.Sprintf(
+				"Admin approved your %s post \"%s\". It is now visible in explore/search.",
+				item.Type, item.Title,
+			),
+		})
+	}
+	if status == "rejected" {
+		reason := strings.TrimSpace(remarks)
+		if reason == "" {
+			reason = "No remarks provided"
+		}
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: item.UserID,
+			Title:  "Post Rejected",
+			Message: fmt.Sprintf(
+				"Admin rejected your %s post \"%s\". Remarks: %s",
+				item.Type, item.Title, reason,
+			),
+		})
+	}
+
+	return nil
 }
 
 func (s *ItemService) DeleteItem(itemID uint) error {
 	return s.itemRepo.DeleteItem(itemID)
+}
+
+func (s *ItemService) HasApprovedRequestForUser(itemID, userID uint) bool {
+	ok, err := s.itemRepo.HasApprovedClaimForUser(itemID, userID)
+	if err != nil {
+		return false
+	}
+	return ok
+}
+
+func (s *ItemService) GetNotificationsByUserID(userID uint) ([]model.Notification, error) {
+	return s.itemRepo.FindNotificationsByUserID(userID)
+}
+
+func (s *ItemService) MarkNotificationsRead(userID uint) error {
+	return s.itemRepo.MarkNotificationsRead(userID)
+}
+
+func (s *ItemService) CountUnreadNotifications(userID uint) int64 {
+	count, err := s.itemRepo.CountUnreadNotifications(userID)
+	if err != nil {
+		return 0
+	}
+	return count
 }

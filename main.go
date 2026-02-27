@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"lostfound/internal/model"
 	"lostfound/pkg/database"
 	"lostfound/pkg/utils"
+	"os"
 	"strings"
 	"time"
 
@@ -16,10 +18,12 @@ import (
 )
 
 func main() {
+	loadDotEnv(".env")
 	database.InitDB()
-	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.Claim{})
+	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.Claim{}, &model.Notification{})
 	createDefaultAdmin()
 	normalizeLegacyData()
+	enforceUserConstraints()
 
 	r := gin.Default()
 	r.SetFuncMap(template.FuncMap{
@@ -39,6 +43,7 @@ func main() {
 		"templates/search.html",
 		"templates/items.html",
 		"templates/item.html",
+		"templates/notifications.html",
 		"templates/admin/admin_dashboard.html",
 		"templates/admin/admin_claims.html",
 		"templates/admin/admin_items.html",
@@ -46,6 +51,7 @@ func main() {
 
 	r.Static("/static", "./static")
 	r.Use(middleware.SetUser())
+	r.Use(middleware.CSRFMiddleware())
 
 	authHandler := handler.NewAuthHandler()
 	itemHandler := handler.NewItemHandler()
@@ -53,9 +59,16 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		user, _ := c.Get("user")
+		csrfToken, _ := c.Get("csrf_token")
+		var unread int64
+		if u, ok := user.(model.User); ok {
+			database.DB.Model(&model.Notification{}).Where("user_id = ? AND is_read = ?", u.ID, false).Count(&unread)
+		}
 		c.HTML(200, "index.html", gin.H{
 			"title":            "ASTU Lost & Found",
 			"user":             user,
+			"unread_count":     unread,
+			"csrf_token":       csrfToken,
 			"content_template": "index_content",
 		})
 	})
@@ -77,6 +90,8 @@ func main() {
 		protected.GET("/report", itemHandler.ShowReportForm)
 		protected.POST("/report", itemHandler.ReportItem)
 		protected.POST("/claim", itemHandler.ClaimItem)
+		protected.GET("/notifications", itemHandler.ShowNotifications)
+		protected.POST("/notifications/read", itemHandler.MarkNotificationsRead)
 	}
 
 	admin := r.Group("/admin")
@@ -93,6 +108,37 @@ func main() {
 
 	log.Println("Server starting on http://localhost:8080")
 	r.Run(":8080")
+}
+
+func loadDotEnv(path string) {
+	file, err := os.Open(path)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.Trim(strings.TrimSpace(parts[1]), "\"'")
+		if key == "" {
+			continue
+		}
+
+		if _, exists := os.LookupEnv(key); !exists {
+			_ = os.Setenv(key, value)
+		}
+	}
 }
 
 func createDefaultAdmin() {
@@ -133,15 +179,30 @@ func createDefaultAdmin() {
 
 func normalizeLegacyData() {
 	var users []model.User
-	if err := database.DB.Where("student_id IS NULL OR student_id = '' OR phone IS NULL OR phone = ''").Find(&users).Error; err == nil {
+	if err := database.DB.Order("id ASC").Find(&users).Error; err == nil {
+		seen := map[string]bool{}
 		for _, u := range users {
 			needsUpdate := false
-			if strings.TrimSpace(u.StudentID) == "" {
+
+			sid := strings.ToLower(strings.TrimSpace(u.StudentID))
+			if sid == "" {
 				baseID := strings.Split(strings.TrimSpace(u.Email), "@")[0]
 				if baseID == "" {
 					baseID = fmt.Sprintf("user_%d", u.ID)
 				}
-				u.StudentID = strings.ToLower(baseID)
+				sid = strings.ToLower(baseID)
+				needsUpdate = true
+			}
+
+			original := sid
+			for seen[sid] {
+				sid = fmt.Sprintf("%s_%d", original, u.ID)
+				needsUpdate = true
+			}
+			seen[sid] = true
+
+			if u.StudentID != sid {
+				u.StudentID = sid
 				needsUpdate = true
 			}
 			if strings.TrimSpace(u.Phone) == "" {
@@ -155,4 +216,13 @@ func normalizeLegacyData() {
 	}
 
 	database.DB.Model(&model.Item{}).Where("approval_status IS NULL OR approval_status = ''").Update("approval_status", "approved")
+	database.DB.Model(&model.Claim{}).Where("request_type IS NULL OR request_type = ''").Update("request_type", "claim_request")
+}
+
+func enforceUserConstraints() {
+	// Keep old databases aligned with current model rules.
+	database.DB.Exec("DROP INDEX IF EXISTS idx_users_student_id")
+	database.DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_users_student_id_lower ON users (LOWER(student_id))")
+	database.DB.Exec("ALTER TABLE users ALTER COLUMN student_id SET NOT NULL")
+	database.DB.Exec("ALTER TABLE users ALTER COLUMN phone SET NOT NULL")
 }

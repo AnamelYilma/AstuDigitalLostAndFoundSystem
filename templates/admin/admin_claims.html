@@ -3,13 +3,14 @@
 
 {{ define "admin_claims_content" }}
 <div class="admin-claims">
-    <h2>Manage Claims</h2>
+    <h2>Manage Item Requests</h2>
     
     <table class="admin-table">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Item</th>
+                <th>Request Type</th>
                 <th>Reporter Contact</th>
                 <th>Claimant</th>
                 <th>Description</th>
@@ -26,6 +27,13 @@
                     <strong>{{ .Item.Title }}</strong><br>
                     <small>{{ .Item.Type }} - {{ .Item.Category }}</small>
                 </td>
+                <td>
+                    {{ if eq .RequestType "found_match_request" }}
+                        Found Match Request
+                    {{ else }}
+                        Claim Request
+                    {{ end }}
+                </td>
                 <td>{{ .Item.User.Name }}<br><small>{{ .Item.User.StudentID }} | {{ .Item.User.Phone }}</small></td>
                 <td>{{ .User.Name }}<br><small>{{ .User.StudentID }} | {{ .User.Phone }}</small></td>
                 <td>{{ .Description }}</td>
@@ -36,6 +44,7 @@
                 <td>
                     {{ if eq .Status "pending" }}
                     <form method="POST" action="/admin/claims/update" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ $.csrf_token }}">
                         <input type="hidden" name="claim_id" value="{{ .ID }}">
                         <input type="text" name="remarks" placeholder="Remarks">
                         <button type="submit" name="status" value="approved" class="btn-small btn-success">Approve</button>

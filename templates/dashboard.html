@@ -29,6 +29,9 @@
         <a href="/report?type=lost" class="btn btn-primary">Report Lost Item</a>
         <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
         <a href="/search" class="btn btn-secondary">Search Items</a>
+        <a href="/notifications" class="btn btn-secondary">
+            Notifications{{ if gt .unread_count 0 }} ({{ .unread_count }}){{ end }}
+        </a>
     </div>
 
     <h3>My Reported Items</h3>

@@ -297,6 +297,18 @@ main {
     object-fit: contain;
 }
 
+.item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.item-actions .btn {
+    min-width: 170px;
+    text-align: center;
+}
+
 /* Badges */
 .badge {
     display: inline-block;
@@ -395,6 +407,10 @@ main {
     }
     
     .dashboard-actions {
+        flex-direction: column;
+    }
+
+    .item-actions {
         flex-direction: column;
     }
     

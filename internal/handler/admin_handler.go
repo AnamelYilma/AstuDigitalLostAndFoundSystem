@@ -23,7 +23,7 @@ func (h *AdminHandler) Dashboard(c *gin.Context) {
 	stats, _ := h.itemService.GetStats()
 	claims, _ := h.itemService.GetAllClaims()
 
-	c.HTML(http.StatusOK, "admin_dashboard.html", gin.H{
+	renderHTML(c, http.StatusOK, "admin_dashboard.html", gin.H{
 		"title":            "Admin Dashboard",
 		"user":             user,
 		"stats":            stats,
@@ -36,7 +36,7 @@ func (h *AdminHandler) ShowClaims(c *gin.Context) {
 	user, _ := c.Get("user")
 	claims, _ := h.itemService.GetAllClaims()
 
-	c.HTML(http.StatusOK, "admin_claims.html", gin.H{
+	renderHTML(c, http.StatusOK, "admin_claims.html", gin.H{
 		"title":            "Manage Claims",
 		"user":             user,
 		"claims":           claims,
@@ -48,7 +48,7 @@ func (h *AdminHandler) ShowItems(c *gin.Context) {
 	user, _ := c.Get("user")
 	items, _ := h.itemService.GetAllItemsForAdmin()
 
-	c.HTML(http.StatusOK, "admin_items.html", gin.H{
+	renderHTML(c, http.StatusOK, "admin_items.html", gin.H{
 		"title":            "Manage Item Posts",
 		"user":             user,
 		"items":            items,
@@ -63,7 +63,7 @@ func (h *AdminHandler) UpdateClaim(c *gin.Context) {
 
 	err := h.itemService.UpdateClaimStatus(uint(claimID), status, remarks)
 	if err != nil {
-		c.HTML(http.StatusOK, "error.html", gin.H{
+		renderHTML(c, http.StatusOK, "error.html", gin.H{
 			"error":            "Failed to update claim: " + err.Error(),
 			"title":            "Error",
 			"content_template": "error_content",
@@ -81,7 +81,7 @@ func (h *AdminHandler) UpdateItem(c *gin.Context) {
 
 	err := h.itemService.UpdateItemApproval(uint(itemID), status, remarks)
 	if err != nil {
-		c.HTML(http.StatusOK, "error.html", gin.H{
+		renderHTML(c, http.StatusOK, "error.html", gin.H{
 			"error":            "Failed to update item status: " + err.Error(),
 			"title":            "Error",
 			"content_template": "error_content",
@@ -96,7 +96,7 @@ func (h *AdminHandler) DeleteItem(c *gin.Context) {
 	itemID, _ := strconv.ParseUint(c.PostForm("item_id"), 10, 32)
 	err := h.itemService.DeleteItem(uint(itemID))
 	if err != nil {
-		c.HTML(http.StatusOK, "error.html", gin.H{
+		renderHTML(c, http.StatusOK, "error.html", gin.H{
 			"error":            "Failed to remove item: " + err.Error(),
 			"title":            "Error",
 			"content_template": "error_content",

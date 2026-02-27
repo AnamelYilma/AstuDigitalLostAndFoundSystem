@@ -31,6 +31,7 @@ type Claim struct {
 	ID           uint           `gorm:"primarykey" json:"id"`
 	ItemID       uint           `gorm:"not null" json:"item_id"`
 	UserID       uint           `gorm:"not null" json:"user_id"`
+	RequestType  string         `gorm:"size:30;default:'claim_request'" json:"request_type"`
 	Description  string         `gorm:"type:text" json:"description"`
 	Status       string         `gorm:"size:20;default:'pending'" json:"status"`
 	AdminRemarks string         `gorm:"type:text" json:"admin_remarks"`

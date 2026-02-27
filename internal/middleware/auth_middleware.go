@@ -1,26 +1,56 @@
 package middleware
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"log"
 	"lostfound/internal/model"
 	"lostfound/pkg/database"
 	"net/http"
+	"os"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 )
 
-var store = sessions.NewCookieStore([]byte("your-secret-key-change-this"))
+var (
+	store     *sessions.CookieStore
+	storeOnce sync.Once
+)
 
-func init() {
+func initStore() {
+	store = sessions.NewCookieStore([]byte(getSessionSecret()))
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   os.Getenv("COOKIE_SECURE") == "true",
+		SameSite: http.SameSiteLaxMode,
 	}
 }
 
+func getSessionSecret() string {
+	if v := os.Getenv("SESSION_SECRET"); v != "" {
+		if len(v) >= 32 {
+			return v
+		}
+		sum := sha256.Sum256([]byte(v))
+		log.Println("SESSION_SECRET is shorter than 32 chars; using SHA-256 derived key")
+		return base64.StdEncoding.EncodeToString(sum[:])
+	}
+	buf := make([]byte, 48)
+	if _, err := rand.Read(buf); err == nil {
+		log.Println("SESSION_SECRET not set; generated an ephemeral secret for this run")
+		return base64.StdEncoding.EncodeToString(buf)
+	}
+	log.Println("SESSION_SECRET not set and secure random failed; using fallback development secret")
+	return "dev-only-session-secret-change-this-32chars"
+}
+
 func GetSession(c *gin.Context) *sessions.Session {
+	storeOnce.Do(initStore)
 	session, _ := store.Get(c.Request, "auth-session")
 	return session
 }
