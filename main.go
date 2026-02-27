@@ -59,11 +59,16 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		user, _ := c.Get("user")
+		if u, ok := user.(model.User); ok {
+			if u.Role == "admin" {
+				c.Redirect(303, "/admin/dashboard")
+				return
+			}
+			c.Redirect(303, "/dashboard")
+			return
+		}
 		csrfToken, _ := c.Get("csrf_token")
 		var unread int64
-		if u, ok := user.(model.User); ok {
-			database.DB.Model(&model.Notification{}).Where("user_id = ? AND is_read = ?", u.ID, false).Count(&unread)
-		}
 		c.HTML(200, "index.html", gin.H{
 			"title":            "ASTU Lost & Found",
 			"user":             user,
