@@ -10,6 +10,7 @@
             <tr>
                 <th>ID</th>
                 <th>Item</th>
+                <th>Reporter Contact</th>
                 <th>Claimant</th>
                 <th>Description</th>
                 <th>Status</th>
@@ -25,7 +26,8 @@
                     <strong>{{ .Item.Title }}</strong><br>
                     <small>{{ .Item.Type }} - {{ .Item.Category }}</small>
                 </td>
-                <td>{{ .User.Name }}<br><small>{{ .User.Email }}</small></td>
+                <td>{{ .Item.User.Name }}<br><small>{{ .Item.User.StudentID }} | {{ .Item.User.Phone }}</small></td>
+                <td>{{ .User.Name }}<br><small>{{ .User.StudentID }} | {{ .User.Phone }}</small></td>
                 <td>{{ .Description }}</td>
                 <td>
                     <span class="badge {{ .Status }}">{{ .Status }}</span>

@@ -15,10 +15,8 @@
                 <a href="/">Home</a>
                 <a href="/search">Search</a>
                 {{ if .user }}
-                    <a href="/dashboard">Dashboard</a>
-                    {{ if eq .user.Role "admin" }}
-                        <a href="/admin/dashboard">Admin</a>
-                    {{ end }}
+                    <a href="/report?type=lost">Report Lost</a>
+                    <a href="/report?type=found">Report Found</a>
                     <a href="/logout">Logout ({{ .user.Name }})</a>
                 {{ else }}
                     <a href="/login">Login</a>
@@ -49,6 +47,8 @@
             {{ template "admin_dashboard_content" . }}
         {{ else if eq .content_template "admin_claims_content" }}
             {{ template "admin_claims_content" . }}
+        {{ else if eq .content_template "admin_items_content" }}
+            {{ template "admin_items_content" . }}
         {{ else if eq .content_template "error_content" }}
             {{ template "error_content" . }}
         {{ end }}

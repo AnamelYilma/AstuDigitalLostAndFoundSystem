@@ -32,7 +32,12 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Color</label>
-                <input type="text" name="color" placeholder="e.g., Black">
+                <select name="color">
+                    {{ range .colors }}
+                    <option value="{{ . }}">{{ . }}</option>
+                    {{ end }}
+                </select>
+                <input type="text" name="color_other" placeholder="If other, type color name">
             </div>
             
             <div class="form-group">
@@ -43,7 +48,11 @@
         
         <div class="form-group">
             <label>Location *</label>
-            <input type="text" name="location" required placeholder="e.g., Library, Room 201">
+            <select name="location" required>
+                {{ range .locations }}
+                <option value="{{ . }}">{{ . }}</option>
+                {{ end }}
+            </select>
         </div>
         
         <div class="form-group">

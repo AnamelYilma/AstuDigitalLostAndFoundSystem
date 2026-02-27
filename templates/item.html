@@ -22,12 +22,14 @@
             <p><strong>Location:</strong> {{ .item.Location }}</p>
             <p><strong>Date:</strong> {{ .item.Date }}</p>
             <p><strong>Reported by:</strong> {{ .item.User.Name }}</p>
+            <p><strong>Contact:</strong> {{ .item.User.StudentID }} / {{ .item.User.Phone }}</p>
+            <p><strong>Approval:</strong> {{ .item.ApprovalStatus }}</p>
             <p><strong>Description:</strong></p>
             <p>{{ .item.Description }}</p>
         </div>
     </div>
     
-    {{ if and .user (ne .user.ID .item.UserID) (eq .item.Status "open") }}
+    {{ if and (eq .item.Type "found") .user (ne .user.ID .item.UserID) (eq .item.Status "open") (eq .item.ApprovalStatus "approved") }}
     <div class="claim-section">
         <h3>Claim This Item</h3>
         <form method="POST" action="/claim">
@@ -38,6 +40,21 @@
             </div>
             <button type="submit" class="btn btn-primary">Submit Claim</button>
         </form>
+    </div>
+    {{ end }}
+
+    {{ if and (eq .item.Type "found") (not .user) }}
+    <div class="claim-section">
+        <h3>Want to claim this item?</h3>
+        <p>Please login first, then submit your claim.</p>
+        <a href="/login" class="btn btn-primary">Login to Claim</a>
+    </div>
+    {{ end }}
+
+    {{ if eq .item.Type "lost" }}
+    <div class="claim-section">
+        <h3>Did you find this item?</h3>
+        <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
     </div>
     {{ end }}
     

@@ -22,7 +22,22 @@
             
             <div class="form-group">
                 <label>Location</label>
-                <input type="text" name="location" placeholder="e.g., Library">
+                <select name="location">
+                    <option value="">All Locations</option>
+                    {{ range .locations }}
+                    <option value="{{ . }}">{{ . }}</option>
+                    {{ end }}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Color</label>
+                <select name="color">
+                    <option value="">All Colors</option>
+                    {{ range .colors }}
+                    <option value="{{ . }}">{{ . }}</option>
+                    {{ end }}
+                </select>
             </div>
             
             <div class="form-group">
@@ -33,9 +48,20 @@
                     <option value="found">Found Only</option>
                 </select>
             </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
         </div>
         
         <button type="submit" class="btn btn-primary">Search</button>
+        <a href="/items" class="btn btn-secondary">Show All</a>
     </form>
 </div>
 {{ end }}

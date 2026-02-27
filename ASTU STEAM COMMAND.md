@@ -1,87 +1,79 @@
-🟢 🥇 FINAL PROJECT – 1st & 2nd Year
+FINAL PROJECT - 1st & 2nd Year
 
-🟢Project Title: ASTU Digital Lost & Found System
+Project Title: ASTU Digital Lost & Found System
 
- 🟢Background & Problem Statement
+Background & Problem Statement
+Students at ASTU frequently lose personal belongings (ID cards, calculators, USB drives, lab coats, books, etc.).
+This system provides a centralized digital platform to report, search, and manage lost/found items.
 
-Students at ASTU frequently lose personal belongings such as:
+Project Objective
+Build a secure platform to:
+- Report lost items
+- Report found items
+- Search items
+- Submit claims for found items
+- Track approval workflow and status
 
-ID cards
-Calculators
-USB drives
-Lab coats
-Books
-mobile
-PC
-textbook
-eysglass
-bag
-cloth
+System Roles
+1. Student
+- Register and login with Student ID + password
+- Report lost/found item
+- Search items (with or without login)
+- Open item details and claim found items (login required)
+- See own report status (pending/approved/rejected)
 
-Currently, there is no centralized digital system to report, search, or track lost and found items. This project aims to create a structured and secure digital solution for the campus community.
+2. Admin
+- Login from separate Admin Login page
+- Approve/reject/remove item posts
+- Approve/reject claim requests
+- View user contact info for coordination
+- View dashboard statistics
 
-🎯 Project Objective
+Campus Location List (ASTU)
+- Library
+- Cafe
+- Class
+- Lap
+- Dorm
+- On Road
+- Tolest
+- Shower
+- Anphe
+- Launch
+- Park
+- Hale.Birroe
+- Other
 
-Design and implement a digital platform that allows students to:
-
-Report lost items
-
-Report found items
-
-Search for missing belongings
-
-Claim recovered items
-
-Track item status through an approval process
-
-The system must include proper authentication, workflow management, and basic administrative control.
-
-👥 System Roles
-
-Student
-
-Report lost or found items
-Search items
-Submit claim requests
-Admin (e.g., Student Union or Authorized Staff)
-Manage item listings
-Approve or reject claim requests
-View system statistics
-
-💻 Full-Stack Version Requirements
 Core Functionalities
+- User registration (Name, Student ID, Phone, Password)
+- Student login by Student ID + Password
+- Separate admin login page
+- Report lost/found with image upload
+- Location selection from ASTU location list
+- Search and filter by type, category, location, and color
+- Public item search/list/detail available without login
+- Claim submission requires login
+- Admin approval workflow for item posts
+- Claim approval/rejection workflow
+- User dashboard showing approval + claim status
 
-🔐 User registration & login
-📤 Report lost item
-📥 Report found item
-📸 Image upload for items
-🔎 Search & filter (by category, date, location)
-🔔 Claim request submission
-👨‍💼 Admin approval/rejection workflow
-📊 Dashboard statistics (total lost, found, claimed, etc.)
+Workflow Rules
+1. User submits item report -> status starts as pending
+2. Admin approves/rejects/removes item report
+3. Only approved items appear in public search
+4. User can open large item detail without login
+5. To apply/claim from detail page, user must login
+6. User remains logged in until Logout is clicked
 
+Security Requirements
+- Password hashing
+- Role-based access control
+- Protected admin routes
+- Input validation
+- Secure upload handling
+- Prevent unauthorized moderation/claim actions
 
-
-🔐 Cyber Security Requirements
-
-Students must demonstrate secure system implementation:
-
-Secure file upload handling
-
-Role-based access control
-
-Prevent unauthorized claim approvals
-
-Protect user data from being accessed by other users
-
-Password hashing implementation
-
-Input validation to prevent injection attacks
-
-Submit a short report explaining:
-
-One possible vulnerability
-
-How it could be exploited
-
-How it was prevented
+Quick Run
+1. Start PostgreSQL and ensure DB config in pkg/database/db.go is correct
+2. Run: go run main.go
+3. Open: http://localhost:8080

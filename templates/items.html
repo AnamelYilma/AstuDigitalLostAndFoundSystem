@@ -4,6 +4,14 @@
 {{ define "items_content" }}
 <div class="items-list">
     <h2>Search Results</h2>
+    <p>
+        <strong>Filters:</strong>
+        Type: {{ if index .filters "type" }}{{ index .filters "type" }}{{ else }}all{{ end }} |
+        Category: {{ if index .filters "category" }}{{ index .filters "category" }}{{ else }}all{{ end }} |
+        Location: {{ if index .filters "location" }}{{ index .filters "location" }}{{ else }}all{{ end }} |
+        Color: {{ if .selected_colors }}{{ range $i, $c := .selected_colors }}{{ if $i }}, {{ end }}{{ $c }}{{ end }}{{ else }}all{{ end }} |
+        Status: {{ if index .filters "approval_status" }}{{ index .filters "approval_status" }}{{ else }}all{{ end }}
+    </p>
     
     {{ if .items }}
     <div class="items-grid">
@@ -22,6 +30,7 @@
                 <p><strong>Location:</strong> {{ .Location }}</p>
                 <p><strong>Date:</strong> {{ .Date }}</p>
                 <p><strong>Status:</strong> {{ .Status }}</p>
+                <p><strong>Approval:</strong> {{ .ApprovalStatus }}</p>
                 <a href="/item/{{ .ID }}" class="btn btn-small">View Details</a>
             </div>
         </div>

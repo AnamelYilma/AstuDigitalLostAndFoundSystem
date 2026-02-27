@@ -33,10 +33,10 @@ func (h *AuthHandler) ShowRegister(c *gin.Context) {
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
-	email := c.PostForm("email")
+	studentID := c.PostForm("student_id")
 	password := c.PostForm("password")
 
-	user, err := h.authService.Login(email, password)
+	user, err := h.authService.Login(studentID, password)
 	if err != nil {
 		c.HTML(http.StatusOK, "login.html", gin.H{
 			"title":            "Login",
@@ -59,10 +59,11 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 func (h *AuthHandler) Register(c *gin.Context) {
 	name := c.PostForm("name")
-	email := c.PostForm("email")
+	studentID := c.PostForm("student_id")
+	phone := c.PostForm("phone")
 	password := c.PostForm("password")
 
-	user, err := h.authService.Register(name, email, password)
+	user, err := h.authService.Register(name, studentID, phone, password)
 	if err != nil {
 		c.HTML(http.StatusOK, "register.html", gin.H{
 			"title":            "Register",

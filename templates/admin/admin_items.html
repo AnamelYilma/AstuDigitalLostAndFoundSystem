@@ -1,0 +1,49 @@
+<!-- templates/admin/items.html -->
+{{ template "layout.html" . }}
+
+{{ define "admin_items_content" }}
+<div class="admin-claims">
+    <h2>Manage Item Posts</h2>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Reporter</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Approval</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .items }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>
+                    <strong>{{ .Title }}</strong><br>
+                    <small>{{ .Category }} / {{ .Color }}</small>
+                </td>
+                <td>{{ .User.Name }}<br><small>{{ .User.StudentID }} | {{ .User.Phone }}</small></td>
+                <td>{{ .Type }}</td>
+                <td>{{ .Location }}</td>
+                <td><span class="badge {{ .ApprovalStatus }}">{{ .ApprovalStatus }}</span></td>
+                <td>
+                    <form method="POST" action="/admin/items/update" class="inline-form">
+                        <input type="hidden" name="item_id" value="{{ .ID }}">
+                        <input type="text" name="remarks" placeholder="Remarks">
+                        <button type="submit" name="approval_status" value="approved" class="btn-small btn-success">Approve</button>
+                        <button type="submit" name="approval_status" value="rejected" class="btn-small btn-danger">Reject</button>
+                    </form>
+                    <form method="POST" action="/admin/items/delete" class="inline-form" style="margin-top:6px;">
+                        <input type="hidden" name="item_id" value="{{ .ID }}">
+                        <button type="submit" class="btn-small btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+{{ end }}

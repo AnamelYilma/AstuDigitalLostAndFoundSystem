@@ -30,5 +30,35 @@
         <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
         <a href="/search" class="btn btn-secondary">Search Items</a>
     </div>
+
+    <h3>My Reported Items</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Approval</th>
+                <th>Claim Status</th>
+                <th>Admin Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .my_items }}
+            <tr>
+                <td>{{ .Title }}</td>
+                <td>{{ .Type }}</td>
+                <td>{{ .Location }}</td>
+                <td><span class="badge {{ .ApprovalStatus }}">{{ .ApprovalStatus }}</span></td>
+                <td><span class="badge {{ .Status }}">{{ .Status }}</span></td>
+                <td>{{ if .AdminRemarks }}{{ .AdminRemarks }}{{ else }}-{{ end }}</td>
+            </tr>
+            {{ else }}
+            <tr>
+                <td colspan="6">No items reported yet.</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
 </div>
 {{ end }}

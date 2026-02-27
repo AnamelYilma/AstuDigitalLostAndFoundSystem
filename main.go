@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"lostfound/internal/handler"
@@ -8,32 +9,25 @@ import (
 	"lostfound/internal/model"
 	"lostfound/pkg/database"
 	"lostfound/pkg/utils"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// Initialize database
 	database.InitDB()
-
-	// Auto migrate tables
 	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.Claim{})
-
-	// Create default admin if not exists
 	createDefaultAdmin()
+	normalizeLegacyData()
 
-	// Setup Gin
 	r := gin.Default()
-
-	// Add template function
 	r.SetFuncMap(template.FuncMap{
 		"now": func() string {
 			return time.Now().Format("2006-01-02")
 		},
 	})
 
-	// FIXED: Load templates properly - layout FIRST, then pages
 	r.LoadHTMLFiles(
 		"templates/layout.html",
 		"templates/index.html",
@@ -45,42 +39,37 @@ func main() {
 		"templates/search.html",
 		"templates/items.html",
 		"templates/item.html",
-		"templates/admin/dashboard.html",
-		"templates/admin/claims.html",
+		"templates/admin/admin_dashboard.html",
+		"templates/admin/admin_claims.html",
+		"templates/admin/admin_items.html",
 	)
 
-	// Serve static files
 	r.Static("/static", "./static")
-
-	// Apply middleware
 	r.Use(middleware.SetUser())
 
-	// Initialize handlers
 	authHandler := handler.NewAuthHandler()
 	itemHandler := handler.NewItemHandler()
 	adminHandler := handler.NewAdminHandler()
 
-	// Public routes
 	r.GET("/", func(c *gin.Context) {
+		user, _ := c.Get("user")
 		c.HTML(200, "index.html", gin.H{
 			"title":            "ASTU Lost & Found",
+			"user":             user,
 			"content_template": "index_content",
 		})
 	})
 
-	// Auth routes
 	r.GET("/login", authHandler.ShowLogin)
 	r.POST("/login", authHandler.Login)
 	r.GET("/register", authHandler.ShowRegister)
 	r.POST("/register", authHandler.Register)
 	r.GET("/logout", authHandler.Logout)
 
-	// Search (public)
 	r.GET("/search", itemHandler.ShowSearch)
 	r.GET("/items", itemHandler.Search)
 	r.GET("/item/:id", itemHandler.ShowItem)
 
-	// Protected routes (require login)
 	protected := r.Group("/")
 	protected.Use(middleware.AuthRequired())
 	{
@@ -90,18 +79,19 @@ func main() {
 		protected.POST("/claim", itemHandler.ClaimItem)
 	}
 
-	// Admin routes
 	admin := r.Group("/admin")
 	admin.Use(middleware.AuthRequired())
 	admin.Use(middleware.AdminRequired())
 	{
 		admin.GET("/dashboard", adminHandler.Dashboard)
 		admin.GET("/claims", adminHandler.ShowClaims)
-		admin.POST("/admin/claims/update", adminHandler.UpdateClaim)
+		admin.POST("/claims/update", adminHandler.UpdateClaim)
+		admin.GET("/items", adminHandler.ShowItems)
+		admin.POST("/items/update", adminHandler.UpdateItem)
+		admin.POST("/items/delete", adminHandler.DeleteItem)
 	}
 
-	// Start server
-	log.Println("✅ Server starting on http://localhost:8080")
+	log.Println("Server starting on http://localhost:8080")
 	r.Run(":8080")
 }
 
@@ -110,15 +100,59 @@ func createDefaultAdmin() {
 	database.DB.Model(&model.User{}).Where("role = ?", "admin").Count(&count)
 
 	if count == 0 {
-		// Create default admin
 		hashedPassword, _ := utils.HashPassword("admin123")
 		admin := &model.User{
-			Name:     "Admin",
-			Email:    "admin@astu.edu",
-			Password: hashedPassword,
-			Role:     "admin",
+			Name:      "Admin",
+			StudentID: "admin",
+			Phone:     "0000000000",
+			Email:     "admin@astu.edu",
+			Password:  hashedPassword,
+			Role:      "admin",
 		}
 		database.DB.Create(admin)
-		log.Println("✅ Default admin created: admin@astu.edu / admin123")
+		log.Println("Default admin created: admin / admin123")
+		return
 	}
+
+	var existingAdmin model.User
+	if err := database.DB.Where("role = ?", "admin").First(&existingAdmin).Error; err == nil {
+		needsUpdate := false
+		if existingAdmin.StudentID == "" {
+			existingAdmin.StudentID = "admin"
+			needsUpdate = true
+		}
+		if existingAdmin.Phone == "" {
+			existingAdmin.Phone = "0000000000"
+			needsUpdate = true
+		}
+		if needsUpdate {
+			database.DB.Save(&existingAdmin)
+		}
+	}
+}
+
+func normalizeLegacyData() {
+	var users []model.User
+	if err := database.DB.Where("student_id IS NULL OR student_id = '' OR phone IS NULL OR phone = ''").Find(&users).Error; err == nil {
+		for _, u := range users {
+			needsUpdate := false
+			if strings.TrimSpace(u.StudentID) == "" {
+				baseID := strings.Split(strings.TrimSpace(u.Email), "@")[0]
+				if baseID == "" {
+					baseID = fmt.Sprintf("user_%d", u.ID)
+				}
+				u.StudentID = strings.ToLower(baseID)
+				needsUpdate = true
+			}
+			if strings.TrimSpace(u.Phone) == "" {
+				u.Phone = "0000000000"
+				needsUpdate = true
+			}
+			if needsUpdate {
+				database.DB.Save(&u)
+			}
+		}
+	}
+
+	database.DB.Model(&model.Item{}).Where("approval_status IS NULL OR approval_status = ''").Update("approval_status", "approved")
 }

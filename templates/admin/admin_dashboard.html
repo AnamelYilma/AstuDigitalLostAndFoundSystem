@@ -20,12 +20,19 @@
         </div>
         <div class="stat-card">
             <div class="stat-number">{{ .stats.pending_claims }}</div>
-            <div>Pending</div>
+            <div>Pending Claims</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ .stats.pending_items }}</div>
+            <div>Pending Item Posts</div>
         </div>
     </div>
     
     <div class="admin-actions">
+        <a href="/report?type=lost" class="btn btn-secondary">Report Lost Item</a>
+        <a href="/report?type=found" class="btn btn-secondary">Report Found Item</a>
         <a href="/admin/claims" class="btn btn-primary">Manage Claims ({{ .stats.pending_claims }} pending)</a>
+        <a href="/admin/items" class="btn btn-primary">Manage Item Posts ({{ .stats.pending_items }} pending)</a>
     </div>
     
     <h3>Recent Claims</h3>
