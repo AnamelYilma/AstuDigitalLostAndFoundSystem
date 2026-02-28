@@ -1,0 +1,37 @@
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/main.exe ."
+  bin = "tmp/main.exe"
+  full_bin = "tmp/main.exe"
+  include_ext = ["go", "html", "css", "js", "env"]
+  exclude_dir = ["assets", "tmp", "vendor", ".git", "static/uploads"]
+  exclude_file = []
+  exclude_regex = ["_test.go"]
+  exclude_unchanged = false
+  follow_symlink = false
+  log = "air_build.log"
+  poll = false
+  poll_interval = 500
+  delay = 300
+  stop_on_root = false
+  send_interrupt = false
+  kill_delay = 500
+  rerun = false
+  rerun_delay = 500
+
+[log]
+  time = true
+  main_only = false
+  silent = false
+
+[color]
+  main = "cyan"
+  watcher = "yellow"
+  build = "green"
+  runner = "magenta"
+
+[misc]
+  clean_on_exit = true
