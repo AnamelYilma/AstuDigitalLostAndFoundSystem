@@ -48,6 +48,7 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 			}
 		}
 	}
+	
 	if itemType, ok := filters["type"]; ok && itemType != "" {
 		query = query.Where("type = ?", itemType)
 	}

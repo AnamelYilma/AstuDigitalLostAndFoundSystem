@@ -29,8 +29,9 @@
     </div>
     
     <div class="admin-actions">
-        <a href="/report?type=lost" class="btn btn-secondary">Report Lost Item</a>
-        <a href="/report?type=found" class="btn btn-secondary">Report Found Item</a>
+        <a href="/report/new?type=lost" class="btn btn-secondary">Report Lost Item</a>
+        <a href="/report/new?type=found" class="btn btn-secondary">Report Found Item</a>
+        <a href="/report" class="btn btn-secondary">Browse Reports</a>
         <a href="/admin/claims" class="btn btn-primary">Manage Claims ({{ .stats.pending_claims }} pending)</a>
         <a href="/admin/items" class="btn btn-primary">Manage Item Posts ({{ .stats.pending_items }} pending)</a>
     </div>
