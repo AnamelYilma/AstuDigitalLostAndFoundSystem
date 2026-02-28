@@ -1,6 +1,8 @@
 # ASTU Digital Lost & Found
 
 Modern web app for reporting, browsing, and approving lost/found items at ASTU.
+##View 
+![alt text](static\img\image.png)
 
 ## Stack
 - Go 1.21+, Gin web framework
