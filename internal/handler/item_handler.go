@@ -119,9 +119,47 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 		return
 	}
 
-	file, err := c.FormFile("image")
-	imagePath := ""
-	if err != nil && itemType == "found" {
+	var imagePaths []string
+	form, _ := c.MultipartForm()
+	if form != nil {
+		files := form.File["images"]
+		for _, file := range files {
+			path, saveErr := h.itemService.SaveImage(file)
+			if saveErr != nil {
+				renderHTML(c, http.StatusOK, "report.html", gin.H{
+					"title":            "Report Item",
+					"user":             u,
+					"type":             itemType,
+					"error":            "Image upload failed: " + saveErr.Error(),
+					"locations":        service.ASTULocations(),
+					"colors":           service.ColorOptions(),
+					"content_template": "report_content",
+				})
+				return
+			}
+			imagePaths = append(imagePaths, path)
+		}
+	}
+	if len(imagePaths) == 0 {
+		// Backward compatibility for single-image field name
+		if file, err := c.FormFile("image"); err == nil {
+			path, saveErr := h.itemService.SaveImage(file)
+			if saveErr != nil {
+				renderHTML(c, http.StatusOK, "report.html", gin.H{
+					"title":            "Report Item",
+					"user":             u,
+					"type":             itemType,
+					"error":            "Image upload failed: " + saveErr.Error(),
+					"locations":        service.ASTULocations(),
+					"colors":           service.ColorOptions(),
+					"content_template": "report_content",
+				})
+				return
+			}
+			imagePaths = append(imagePaths, path)
+		}
+	}
+	if len(imagePaths) == 0 && itemType == "found" {
 		renderHTML(c, http.StatusOK, "report.html", gin.H{
 			"title":            "Report Item",
 			"user":             u,
@@ -133,25 +171,10 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 		})
 		return
 	}
-	if err == nil {
-		imagePath, err = h.itemService.SaveImage(file)
-		if err != nil {
-			renderHTML(c, http.StatusOK, "report.html", gin.H{
-				"title":            "Report Item",
-				"user":             u,
-				"type":             itemType,
-				"error":            "Image upload failed: " + err.Error(),
-				"locations":        service.ASTULocations(),
-				"colors":           service.ColorOptions(),
-				"content_template": "report_content",
-			})
-			return
-		}
-	}
 
-	_, err = h.itemService.CreateItem(
+	_, err := h.itemService.CreateItem(
 		u.ID, itemType, title, category, color, brand,
-		location, date, description, imagePath,
+		location, date, description, imagePaths,
 	)
 
 	if err != nil {

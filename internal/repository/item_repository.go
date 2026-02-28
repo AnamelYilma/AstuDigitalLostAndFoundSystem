@@ -17,7 +17,7 @@ func (r *ItemRepository) Create(item *model.Item) error {
 
 func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, error) {
 	var items []model.Item
-	query := database.DB.Preload("User")
+	query := database.DB.Preload("User").Preload("Images")
 
 	if category, ok := filters["category"]; ok && category != "" {
 		query = query.Where("category = ?", category)
@@ -51,6 +51,15 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 	if itemType, ok := filters["type"]; ok && itemType != "" {
 		query = query.Where("type = ?", itemType)
 	}
+	if q, ok := filters["q"]; ok {
+		if keyword, ok := q.(string); ok && keyword != "" {
+			like := "%" + keyword + "%"
+			query = query.Joins("LEFT JOIN users ON users.id = items.user_id").Where(
+				"LOWER(items.title) LIKE LOWER(?) OR LOWER(items.description) LIKE LOWER(?) OR LOWER(items.brand) LIKE LOWER(?) OR LOWER(users.name) LIKE LOWER(?) OR LOWER(users.student_id) LIKE LOWER(?)",
+				like, like, like, like, like,
+			)
+		}
+	}
 	if dateFrom, ok := filters["date_from"]; ok && dateFrom != "" {
 		query = query.Where("\"date\" >= ?", dateFrom)
 	}
@@ -67,7 +76,7 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 
 func (r *ItemRepository) FindByID(id uint) (*model.Item, error) {
 	var item model.Item
-	err := database.DB.Preload("User").First(&item, id).Error
+	err := database.DB.Preload("User").Preload("Images").First(&item, id).Error
 	return &item, err
 }
 
@@ -137,18 +146,32 @@ func (r *ItemRepository) HasApprovedClaimForUser(itemID, userID uint) (bool, err
 
 func (r *ItemRepository) FindByUserID(userID uint) ([]model.Item, error) {
 	var items []model.Item
-	err := database.DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&items).Error
+	err := database.DB.Preload("Images").Where("user_id = ?", userID).Order("created_at DESC").Find(&items).Error
 	return items, err
 }
 
 func (r *ItemRepository) FindAllItemsForAdmin() ([]model.Item, error) {
 	var items []model.Item
-	err := database.DB.Preload("User").Order("created_at DESC").Find(&items).Error
+	err := database.DB.Preload("User").Preload("Images").Order("created_at DESC").Find(&items).Error
 	return items, err
 }
 
 func (r *ItemRepository) DeleteItem(itemID uint) error {
 	return database.DB.Delete(&model.Item{}, itemID).Error
+}
+
+func (r *ItemRepository) CreateItemImages(itemID uint, paths []string) error {
+	if len(paths) == 0 {
+		return nil
+	}
+	images := make([]model.ItemImage, 0, len(paths))
+	for _, path := range paths {
+		images = append(images, model.ItemImage{
+			ItemID: itemID,
+			Path:   path,
+		})
+	}
+	return database.DB.Create(&images).Error
 }
 
 func (r *ItemRepository) CreateNotification(notification *model.Notification) error {

@@ -68,12 +68,115 @@
         
         <div class="form-group">
             <label>Photo {{ if eq .type "found" }}*{{ end }}</label>
-            <input type="file" name="image" accept="image/*" {{ if eq .type "found" }}required{{ end }}>
-            <small>Max size: 5MB (JPG, PNG only). Found report requires photo; lost report photo is optional.</small>
+            <div class="upload-widget" id="upload-widget">
+                <input id="images-input" class="file-input-hidden" type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }}>
+                <label for="images-input" id="upload-dropzone" class="upload-dropzone">
+                    <strong>Drag and drop images here</strong>
+                    <span>or click this area to choose files</span>
+                </label>
+                <div class="upload-actions">
+                    <button type="button" id="upload-browse" class="btn btn-secondary">Choose Images</button>
+                    <button type="button" id="upload-clear" class="btn btn-danger">Clear</button>
+                </div>
+                <div id="upload-preview" class="upload-preview"></div>
+            </div>
+            <small>Max size per file: 5MB (JPG, PNG only). Found report requires at least one photo; lost report photo is optional.</small>
         </div>
         
         <button type="submit" class="btn btn-primary">Submit Report</button>
         <a href="/dashboard" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<script>
+(function () {
+    const input = document.getElementById('images-input');
+    const dropzone = document.getElementById('upload-dropzone');
+    const browseBtn = document.getElementById('upload-browse');
+    const clearBtn = document.getElementById('upload-clear');
+    const preview = document.getElementById('upload-preview');
+    if (!input || !dropzone || !browseBtn || !clearBtn || !preview) return;
+
+    let selectedFiles = [];
+
+    function fileKey(file) {
+        return [file.name, file.size, file.lastModified].join('|');
+    }
+
+    function syncInputFiles() {
+        const dt = new DataTransfer();
+        selectedFiles.forEach((file) => dt.items.add(file));
+        input.files = dt.files;
+    }
+
+    function renderPreview() {
+        preview.innerHTML = '';
+        if (!selectedFiles.length) return;
+        selectedFiles.forEach((file) => {
+            const card = document.createElement('div');
+            card.className = 'upload-preview-item';
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.alt = file.name;
+            img.onload = function () {
+                URL.revokeObjectURL(this.src);
+            };
+            const name = document.createElement('small');
+            name.textContent = file.name;
+            card.appendChild(img);
+            card.appendChild(name);
+            preview.appendChild(card);
+        });
+    }
+
+    function addFiles(fileList) {
+        const existing = new Set(selectedFiles.map(fileKey));
+        Array.from(fileList).forEach((file) => {
+            if (!file.type.startsWith('image/')) return;
+            const key = fileKey(file);
+            if (!existing.has(key)) {
+                selectedFiles.push(file);
+                existing.add(key);
+            }
+        });
+        syncInputFiles();
+        renderPreview();
+    }
+
+    browseBtn.addEventListener('click', function () {
+        input.click();
+    });
+
+    clearBtn.addEventListener('click', function () {
+        selectedFiles = [];
+        syncInputFiles();
+        renderPreview();
+    });
+
+    input.addEventListener('change', function () {
+        addFiles(this.files);
+        this.value = '';
+    });
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('drag-active');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('drag-active');
+        });
+    });
+
+    dropzone.addEventListener('drop', function (e) {
+        addFiles(e.dataTransfer.files);
+    });
+})();
+</script>
 {{ end }}

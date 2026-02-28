@@ -10,7 +10,7 @@
         </form>
     </div>
 
-    <table class="admin-table">
+    <table class="admin-table notifications-table">
         <thead>
             <tr>
                 <th>Title</th>
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
             {{ range .notifications }}
-            <tr>
+            <tr class="{{ if not .IsRead }}notif-unread{{ end }}">
                 <td>{{ .Title }}</td>
                 <td>{{ .Message }}</td>
                 <td>

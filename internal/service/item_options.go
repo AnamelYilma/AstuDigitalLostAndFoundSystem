@@ -63,6 +63,10 @@ func ColorOptions() []string {
 	return colorOptions
 }
 
+func ItemCategories() []string {
+	return itemCategories
+}
+
 func IsStandardColor(color string) bool {
 	for _, c := range colorOptions {
 		if strings.EqualFold(strings.TrimSpace(color), c) {

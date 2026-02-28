@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"lostfound/internal/model"
 	"lostfound/internal/service"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,13 +49,67 @@ func (h *AdminHandler) ShowClaims(c *gin.Context) {
 
 func (h *AdminHandler) ShowItems(c *gin.Context) {
 	user, _ := c.Get("user")
-	items, _ := h.itemService.GetAllItemsForAdmin()
+	filters := map[string]interface{}{}
+	selectedQ := strings.TrimSpace(c.Query("q"))
+	selectedType := ""
+	selectedStatus := ""
+	selectedCategory := ""
+	selectedLocation := ""
+	selectedDateFrom := ""
+	selectedDateTo := ""
+
+	if selectedQ != "" {
+		filters["q"] = selectedQ
+	}
+	if t := c.Query("type"); t != "" && service.IsValidItemType(t) {
+		filters["type"] = t
+		selectedType = t
+	}
+	if st := c.Query("status"); st != "" && service.IsValidApprovalStatus(st) {
+		filters["approval_status"] = st
+		selectedStatus = st
+	}
+	if cgy := c.Query("category"); cgy != "" && service.IsValidCategory(cgy) {
+		filters["category"] = cgy
+		selectedCategory = cgy
+	}
+	if loc := c.Query("location"); loc != "" && service.IsValidASTULocation(loc) {
+		filters["location"] = loc
+		selectedLocation = loc
+	}
+	if from := c.Query("date_from"); from != "" {
+		if _, err := time.Parse("2006-01-02", from); err == nil {
+			filters["date_from"] = from
+			selectedDateFrom = from
+		}
+	}
+	if to := c.Query("date_to"); to != "" {
+		if _, err := time.Parse("2006-01-02", to); err == nil {
+			filters["date_to"] = to
+			selectedDateTo = to
+		}
+	}
+
+	items, _ := h.itemService.SearchItems(filters)
+	typedUser, _ := user.(model.User)
+	unreadCount := h.itemService.CountUnreadNotifications(typedUser.ID)
 
 	renderHTML(c, http.StatusOK, "admin_items.html", gin.H{
-		"title":            "Manage Item Posts",
-		"user":             user,
-		"items":            items,
-		"content_template": "admin_items_content",
+		"title":              "Manage Item Posts",
+		"user":               user,
+		"items":              items,
+		"filters":            filters,
+		"locations":          service.ASTULocations(),
+		"categories":         service.ItemCategories(),
+		"selected_q":         selectedQ,
+		"selected_type":      selectedType,
+		"selected_status":    selectedStatus,
+		"selected_category":  selectedCategory,
+		"selected_location":  selectedLocation,
+		"selected_date_from": selectedDateFrom,
+		"selected_date_to":   selectedDateTo,
+		"unread_count":       unreadCount,
+		"content_template":   "admin_items_content",
 	})
 }
 

@@ -63,7 +63,7 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 	return "/static/uploads/" + filename, nil
 }
 
-func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, brand, location, date, description, imagePath string) (*model.Item, error) {
+func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, brand, location, date, description string, imagePaths []string) (*model.Item, error) {
 	if !IsValidItemType(itemType) {
 		return nil, errors.New("invalid item type")
 	}
@@ -78,6 +78,10 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 			return nil, errors.New("invalid date format")
 		}
 	}
+	primaryImage := ""
+	if len(imagePaths) > 0 {
+		primaryImage = imagePaths[0]
+	}
 
 	item := &model.Item{
 		UserID:         userID,
@@ -89,13 +93,18 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 		Location:       location,
 		Date:           date,
 		Description:    description,
-		Image:          imagePath,
+		Image:          primaryImage,
 		Status:         "open",
 		ApprovalStatus: "pending",
 	}
 
-	err := s.itemRepo.Create(item)
-	return item, err
+	if err := s.itemRepo.Create(item); err != nil {
+		return nil, err
+	}
+	if err := s.itemRepo.CreateItemImages(item.ID, imagePaths); err != nil {
+		return nil, err
+	}
+	return item, nil
 }
 
 func (s *ItemService) SearchItems(filters map[string]interface{}) ([]model.Item, error) {

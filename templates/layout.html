@@ -17,8 +17,8 @@
                 {{ if .user }}
                     <a href="/report?type=lost">Report Lost</a>
                     <a href="/report?type=found">Report Found</a>
-                    <a href="/notifications">
-                        Notifications{{ if gt .unread_count 0 }} ({{ .unread_count }}){{ end }}
+                    <a href="/notifications" class="notify-link {{ if gt .unread_count 0 }}unread{{ end }}">
+                        Notifications{{ if gt .unread_count 0 }}<sup class="notify-badge">{{ .unread_count }}</sup>{{ end }}
                     </a>
                     <a href="/logout">Logout ({{ .user.Name }})</a>
                 {{ else }}

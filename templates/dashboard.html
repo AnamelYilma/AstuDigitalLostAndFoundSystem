@@ -4,7 +4,7 @@
 {{ define "dashboard_content" }}
 <div class="dashboard">
     <h2>Welcome, {{ .user.Name }}!</h2>
-    <p>Role: {{ .user.Role }}</p>
+    <p>Manage your reports, requests, and updates from one place.</p>
     
     <div class="stats-grid">
         <div class="stat-card">
@@ -29,8 +29,8 @@
         <a href="/report?type=lost" class="btn btn-primary">Report Lost Item</a>
         <a href="/report?type=found" class="btn btn-primary">Report Found Item</a>
         <a href="/search" class="btn btn-secondary">Search Items</a>
-        <a href="/notifications" class="btn btn-secondary">
-            Notifications{{ if gt .unread_count 0 }} ({{ .unread_count }}){{ end }}
+        <a href="/notifications" class="btn btn-secondary notify-link">
+            Notifications{{ if gt .unread_count 0 }}<sup class="notify-badge">{{ .unread_count }}</sup>{{ end }}
         </a>
     </div>
 

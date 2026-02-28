@@ -20,7 +20,7 @@ import (
 func main() {
 	loadDotEnv(".env")
 	database.InitDB()
-	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.Claim{}, &model.Notification{})
+	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.ItemImage{}, &model.Claim{}, &model.Notification{})
 	createDefaultAdmin()
 	normalizeLegacyData()
 	enforceUserConstraints()

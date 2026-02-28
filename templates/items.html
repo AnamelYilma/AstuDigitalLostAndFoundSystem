@@ -19,7 +19,9 @@
     <div class="items-grid">
         {{ range .items }}
         <div class="item-card">
-            {{ if .Image }}
+            {{ if .Images }}
+            <img src="{{ (index .Images 0).Path }}" alt="{{ .Title }}" class="item-image">
+            {{ else if .Image }}
             <img src="{{ .Image }}" alt="{{ .Title }}" class="item-image">
             {{ else }}
             <div class="no-image">No Image</div>

@@ -24,7 +24,17 @@ type Item struct {
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
 
-	User User `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	User   User        `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Images []ItemImage `gorm:"foreignKey:ItemID" json:"images,omitempty"`
+}
+
+type ItemImage struct {
+	ID        uint           `gorm:"primarykey" json:"id"`
+	ItemID    uint           `gorm:"index;not null" json:"item_id"`
+	Path      string         `gorm:"size:500;not null" json:"path"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 type Claim struct {
@@ -49,4 +59,8 @@ func (Item) TableName() string {
 
 func (Claim) TableName() string {
 	return "claims"
+}
+
+func (ItemImage) TableName() string {
+	return "item_images"
 }
