@@ -10,24 +10,24 @@ Modern web app for reporting, browsing, and approving lost/found items at ASTU.
 - CSRF middleware
 
 ## Folder Structure (key parts)
-- `main.go` – bootstrap, routes, template loading, middleware
-- `internal/handler` – HTTP handlers (auth, item, admin)
-- `internal/service` – business rules (approvals, claims, notifications)
-- `internal/repository` – DB access via GORM
-- `internal/model` – User, Item, ItemImage, Claim, Notification structs
-- `internal/middleware` – auth/session, admin guard, CSRF
-- `templates` – HTML (layout, index, dashboard, report form, report view/cards, item detail, admin pages)
-- `static/css/style.css` – minor overrides (Tailwind loaded via CDN)
-- `static/uploads` – saved item images
+- `main.go` ï¿½ bootstrap, routes, template loading, middleware
+- `internal/handler` ï¿½ HTTP handlers (auth, item, admin)
+- `internal/service` ï¿½ business rules (approvals, claims, notifications)
+- `internal/repository` ï¿½ DB access via GORM
+- `internal/model` ï¿½ User, Item, ItemImage, Claim, Notification structs
+- `internal/middleware` ï¿½ auth/session, admin guard, CSRF
+- `templates` ï¿½ HTML (layout, index, dashboard, report form, report view/cards, item detail, admin pages)
+- `static/css/style.css` ï¿½ minor overrides (Tailwind loaded via CDN)
+- `static/uploads` ï¿½ saved item images
 
 ## Run Locally
 1) Set env (or `.env`):
 ```
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=000
 DB_USER=postgres
 DB_PASSWORD=yourpass
-DB_NAME=lostfound
+DB_NAME=NameDatabse
 DB_SSLMODE=disable
 # optional: DATABASE_URL=postgres://user:pass@host:port/db?sslmode=disable
 SESSION_SECRET=change_me_32_chars
@@ -79,7 +79,7 @@ Logs: "Server starting on http://localhost:8080".
 3) Admin can reject posts/claims with remarks; posters/claimants get notified.
 
 ## Troubleshooting
-- If Tailwind styles don’t show, hard-refresh (Ctrl+F5); templates load CDN script in `layout.html`.
+- If Tailwind styles donï¿½t show, hard-refresh (Ctrl+F5); templates load CDN script in `layout.html`.
 - If DB fails: verify env vars and Postgres is running; check connection string.
 - If build errors mention `search.html`: ensure `main.go` does not load removed templates (already adjusted).
 
