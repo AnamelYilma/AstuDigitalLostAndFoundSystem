@@ -142,8 +142,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 					"user":             u,
 					"type":             itemType,
 					"error":            "Image upload failed: " + saveErr.Error(),
-					"locations":        service.ASTULocations(),
-					"colors":           service.ColorOptions(),
+					"locations":        locations,
+					"colors":           colors,
+					"categories":       categories,
 					"content_template": "report_content",
 				})
 				return
@@ -161,8 +162,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 					"user":             u,
 					"type":             itemType,
 					"error":            "Image upload failed: " + saveErr.Error(),
-					"locations":        service.ASTULocations(),
-					"colors":           service.ColorOptions(),
+					"locations":        locations,
+					"colors":           colors,
+					"categories":       categories,
 					"content_template": "report_content",
 				})
 				return
@@ -176,8 +178,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Photo is required for found item reports",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -194,8 +197,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Failed to save item: " + err.Error(),
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return

@@ -644,6 +644,15 @@ main {
     border-color: #0f172a;
     background: #e2e8f0;
 }
-.file-input-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.file-input-hidden { 
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
 .upload-preview { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
 .upload-preview .badge { background: #e2e8f0; color: #0f172a; border-radius: 999px; padding: 4px 8px; font-size: 12px; }
