@@ -42,10 +42,15 @@ var itemTypes = []string{
 
 var itemCategories = []string{
 	"electronics",
-	"id",
-	"books",
-	"clothing",
-	"accessories",
+	"book & document",
+	"study tool",
+	"atm card",
+	"jewelry",
+	"sport equipment",
+	"bag & backpack",
+	"key",
+	"id card",
+	"clothing & accessories",
 	"other",
 }
 

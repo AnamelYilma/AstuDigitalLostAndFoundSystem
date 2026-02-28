@@ -9,19 +9,16 @@
     <div class="error">{{ .error }}</div>
     {{ end }}
     
-    <form method="POST" action="/report" enctype="multipart/form-data">
+    <form method="POST" action="/report/new" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
         <input type="hidden" name="type" value="{{ .type }}">
         
         <div class="form-group">
             <label>Category *</label>
             <select name="category" required>
-                <option value="electronics">Electronics</option>
-                <option value="id">ID Card</option>
-                <option value="books">Books</option>
-                <option value="clothing">Clothing</option>
-                <option value="accessories">Accessories</option>
-                <option value="other">Other</option>
+                {{ range .categories }}
+                <option value="{{ . }}">{{ . }}</option>
+                {{ end }}
             </select>
         </div>
         

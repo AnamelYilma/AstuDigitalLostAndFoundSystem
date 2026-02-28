@@ -13,10 +13,10 @@
             <a href="/" class="logo">ASTU Lost & Found</a>
             <div class="nav-links">
                 <a href="/">Home</a>
-                <a href="/search">Search</a>
+                <a href="/report">Report</a>
                 {{ if .user }}
-                    <a href="/report?type=lost">Report Lost</a>
-                    <a href="/report?type=found">Report Found</a>
+                    <a href="/report/new?type=lost">Report Lost</a>
+                    <a href="/report/new?type=found">Report Found</a>
                     <a href="/notifications" class="notify-link {{ if gt .unread_count 0 }}unread{{ end }}">
                         Notifications{{ if gt .unread_count 0 }}<sup class="notify-badge">{{ .unread_count }}</sup>{{ end }}
                     </a>

@@ -3,17 +3,57 @@
 
 {{ define "items_content" }}
 <div class="items-list">
-    <h2>Search Results</h2>
-    <p>
-        <strong>Filters:</strong>
-        Type: {{ if index .filters "type" }}{{ index .filters "type" }}{{ else }}all{{ end }} |
-        Category: {{ if index .filters "category" }}{{ index .filters "category" }}{{ else }}all{{ end }} |
-        Location: {{ if index .filters "location" }}{{ index .filters "location" }}{{ else }}all{{ end }} |
-        Color: {{ if .selected_colors }}{{ range $i, $c := .selected_colors }}{{ if $i }}, {{ end }}{{ $c }}{{ end }}{{ else }}all{{ end }} |
-        Status: {{ if index .filters "approval_status" }}{{ index .filters "approval_status" }}{{ else }}all{{ end }} |
-        Date From: {{ if index .filters "date_from" }}{{ index .filters "date_from" }}{{ else }}all{{ end }} |
-        Date To: {{ if index .filters "date_to" }}{{ index .filters "date_to" }}{{ else }}all{{ end }}
-    </p>
+    <h2>All Reports</h2>
+
+    <form method="GET" action="/report" class="search-form admin-filter">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Type</label>
+                <select name="type">
+                    <option value="">All</option>
+                    <option value="lost" {{ if eq .selected_type "lost" }}selected{{ end }}>Lost</option>
+                    <option value="found" {{ if eq .selected_type "found" }}selected{{ end }}>Found</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="">All</option>
+                    {{ range .categories }}
+                    <option value="{{ . }}" {{ if eq $.selected_category . }}selected{{ end }}>{{ . }}</option>
+                    {{ end }}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <select name="location">
+                    <option value="">All</option>
+                    {{ range .locations }}
+                    <option value="{{ . }}" {{ if eq $.selected_location . }}selected{{ end }}>{{ . }}</option>
+                    {{ end }}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Color</label>
+                <select name="color">
+                    <option value="">All</option>
+                    {{ range .colors }}
+                    <option value="{{ . }}" {{ if eq $.selected_color . }}selected{{ end }}>{{ . }}</option>
+                    {{ end }}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date From</label>
+                <input type="date" name="date_from" value="{{ .selected_date_from }}">
+            </div>
+            <div class="form-group">
+                <label>Date To</label>
+                <input type="date" name="date_to" value="{{ .selected_date_to }}">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/report" class="btn btn-secondary">Clear</a>
+    </form>
     
     {{ if .items }}
     <div class="items-grid">
@@ -41,7 +81,6 @@
                 </p>
                 <p><strong>Date:</strong> {{ .Date }}</p>
                 <p><strong>Status:</strong> {{ .Status }}</p>
-                <p><strong>Approval:</strong> {{ .ApprovalStatus }}</p>
                 <a href="/item/{{ .ID }}" class="btn btn-small">View Details</a>
             </div>
         </div>

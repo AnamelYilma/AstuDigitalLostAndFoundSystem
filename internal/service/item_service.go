@@ -259,7 +259,7 @@ func (s *ItemService) UpdateItemApproval(itemID uint, status, remarks string) er
 			UserID: item.UserID,
 			Title:  "Post Approved",
 			Message: fmt.Sprintf(
-				"Admin approved your %s post \"%s\". It is now visible in explore/search.",
+				"Admin approved your %s post \"%s\". It is now visible in the Report list.",
 				item.Type, item.Title,
 			),
 		})

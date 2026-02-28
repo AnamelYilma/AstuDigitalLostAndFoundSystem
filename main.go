@@ -26,6 +26,9 @@ func main() {
 	enforceUserConstraints()
 
 	r := gin.Default()
+	if err := r.SetTrustedProxies([]string{"127.0.0.1", "::1"}); err != nil {
+		log.Fatalf("failed to set trusted proxies: %v", err)
+	}
 	r.SetFuncMap(template.FuncMap{
 		"now": func() string {
 			return time.Now().Format("2006-01-02")
@@ -84,16 +87,18 @@ func main() {
 	r.POST("/register", authHandler.Register)
 	r.GET("/logout", authHandler.Logout)
 
-	r.GET("/search", itemHandler.ShowSearch)
-	r.GET("/items", itemHandler.Search)
+	r.GET("/report", itemHandler.Search)
+	// Backward compatibility: old search routes now redirect to /report
+	r.GET("/search", func(c *gin.Context) { c.Redirect(303, "/report") })
+	r.GET("/items", func(c *gin.Context) { c.Redirect(303, "/report") })
 	r.GET("/item/:id", itemHandler.ShowItem)
 
 	protected := r.Group("/")
 	protected.Use(middleware.AuthRequired())
 	{
 		protected.GET("/dashboard", itemHandler.Dashboard)
-		protected.GET("/report", itemHandler.ShowReportForm)
-		protected.POST("/report", itemHandler.ReportItem)
+		protected.GET("/report/new", itemHandler.ShowReportForm)
+		protected.POST("/report/new", itemHandler.ReportItem)
 		protected.POST("/claim", itemHandler.ClaimItem)
 		protected.GET("/notifications", itemHandler.ShowNotifications)
 		protected.POST("/notifications/read", itemHandler.MarkNotificationsRead)

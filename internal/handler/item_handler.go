@@ -44,19 +44,26 @@ func (h *ItemHandler) ShowReportForm(c *gin.Context) {
 	if itemType != "lost" && itemType != "found" {
 		itemType = "lost"
 	}
+	locations := service.ASTULocations()
+	colors := service.ColorOptions()
+	categories := service.ItemCategories()
 
 	renderHTML(c, http.StatusOK, "report.html", gin.H{
 		"title":            "Report Item",
 		"user":             user,
 		"type":             itemType,
-		"locations":        service.ASTULocations(),
-		"colors":           service.ColorOptions(),
+		"locations":        locations,
+		"colors":           colors,
+		"categories":       categories,
 		"content_template": "report_content",
 	})
 }
 
 func (h *ItemHandler) ReportItem(c *gin.Context) {
 	u := c.MustGet("user").(model.User)
+	locations := service.ASTULocations()
+	colors := service.ColorOptions()
+	categories := service.ItemCategories()
 
 	itemType := c.PostForm("type")
 	title := c.PostForm("title")
@@ -76,8 +83,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             "lost",
 			"error":            "Invalid report type",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -88,8 +96,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Invalid category value",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -100,8 +109,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Please select a valid ASTU location",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -112,8 +122,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Please provide item color",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -131,8 +142,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 					"user":             u,
 					"type":             itemType,
 					"error":            "Image upload failed: " + saveErr.Error(),
-					"locations":        service.ASTULocations(),
-					"colors":           service.ColorOptions(),
+					"locations":        locations,
+					"colors":           colors,
+					"categories":       categories,
 					"content_template": "report_content",
 				})
 				return
@@ -150,8 +162,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 					"user":             u,
 					"type":             itemType,
 					"error":            "Image upload failed: " + saveErr.Error(),
-					"locations":        service.ASTULocations(),
-					"colors":           service.ColorOptions(),
+					"locations":        locations,
+					"colors":           colors,
+					"categories":       categories,
 					"content_template": "report_content",
 				})
 				return
@@ -165,8 +178,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Photo is required for found item reports",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -183,8 +197,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Failed to save item: " + err.Error(),
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -229,44 +244,44 @@ func (h *ItemHandler) Search(c *gin.Context) {
 			filters["location"] = location
 		}
 	}
-	var selectedColors []string
-	for _, color := range c.QueryArray("color") {
-		clean := strings.ToLower(strings.TrimSpace(color))
-		if clean == "" {
-			continue
-		}
-		if service.IsStandardColor(clean) {
-			selectedColors = append(selectedColors, clean)
-		}
+	selectedCategory := ""
+	selectedLocation := ""
+	selectedType := ""
+	selectedColor := ""
+	selectedDateFrom := ""
+	selectedDateTo := ""
+
+	if category, ok := filters["category"].(string); ok {
+		selectedCategory = category
 	}
-	if len(selectedColors) > 0 {
-		filters["colors"] = selectedColors
+	if location, ok := filters["location"].(string); ok {
+		selectedLocation = location
+	}
+
+	color := strings.ToLower(strings.TrimSpace(c.Query("color")))
+	if color != "" && service.IsStandardColor(color) {
+		filters["colors"] = []string{color}
+		selectedColor = color
 	}
 	if itemType := c.Query("type"); itemType != "" {
 		if service.IsValidItemType(itemType) {
 			filters["type"] = itemType
+			selectedType = itemType
 		}
 	}
 	if dateFrom := c.Query("date_from"); dateFrom != "" {
 		if _, err := time.Parse("2006-01-02", dateFrom); err == nil {
 			filters["date_from"] = dateFrom
+			selectedDateFrom = dateFrom
 		}
 	}
 	if dateTo := c.Query("date_to"); dateTo != "" {
 		if _, err := time.Parse("2006-01-02", dateTo); err == nil {
 			filters["date_to"] = dateTo
+			selectedDateTo = dateTo
 		}
 	}
-	if status := c.Query("status"); status != "" {
-		if service.IsValidApprovalStatus(status) {
-			// Public explore only shows approved items.
-			if isAdmin {
-				filters["approval_status"] = status
-			} else if status == "approved" {
-				filters["approval_status"] = "approved"
-			}
-		}
-	}
+
 	if !isAdmin {
 		if _, ok := filters["approval_status"]; !ok {
 			filters["approval_status"] = "approved"
@@ -279,15 +294,21 @@ func (h *ItemHandler) Search(c *gin.Context) {
 	}
 
 	renderHTML(c, http.StatusOK, "items.html", gin.H{
-		"title":            "Search Results",
-		"items":            items,
-		"filters":          filters,
-		"selected_colors":  selectedColors,
-		"user":             user,
-		"is_admin":         isAdmin,
-		"locations":        service.ASTULocations(),
-		"colors":           service.ColorOptions(),
-		"content_template": "items_content",
+		"title":              "Reports",
+		"items":              items,
+		"filters":            filters,
+		"user":               user,
+		"is_admin":           isAdmin,
+		"locations":          service.ASTULocations(),
+		"colors":             service.ColorOptions(),
+		"categories":         service.ItemCategories(),
+		"selected_category":  selectedCategory,
+		"selected_location":  selectedLocation,
+		"selected_type":      selectedType,
+		"selected_color":     selectedColor,
+		"selected_date_from": selectedDateFrom,
+		"selected_date_to":   selectedDateTo,
+		"content_template":   "items_content",
 	})
 }
 
@@ -296,7 +317,7 @@ func (h *ItemHandler) ShowItem(c *gin.Context) {
 
 	item, err := h.itemService.GetItemByID(uint(id))
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/search")
+		c.Redirect(http.StatusSeeOther, "/report")
 		return
 	}
 
@@ -312,12 +333,12 @@ func (h *ItemHandler) ShowItem(c *gin.Context) {
 
 	if item.ApprovalStatus != "approved" {
 		if user == nil {
-			c.Redirect(http.StatusSeeOther, "/search")
+			c.Redirect(http.StatusSeeOther, "/report")
 			return
 		}
 		u := user.(model.User)
 		if u.Role != "admin" && u.ID != item.UserID {
-			c.Redirect(http.StatusSeeOther, "/search")
+			c.Redirect(http.StatusSeeOther, "/report")
 			return
 		}
 	}
