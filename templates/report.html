@@ -1,0 +1,84 @@
+<!-- templates/report.html -->
+{{ template "layout.html" . }}
+
+{{ define "report_content" }}
+<div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="text-xs uppercase tracking-[0.18em] text-slate-500 font-semibold">Report</p>
+      <h2 class="text-2xl font-bold text-slate-900">Report {{ if eq .type "lost" }}Lost{{ else }}Found{{ end }} Item</h2>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="mb-4 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 px-4 py-3 text-sm">{{ .error }}</div>
+  {{ end }}
+
+  <form method="POST" action="/report/new" enctype="multipart/form-data" class="space-y-4">
+    <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
+    <input type="hidden" name="type" value="{{ .type }}">
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Category *</label>
+        <select name="category" required class="w-full rounded-lg border-slate-300 mt-1">
+          {{ range .categories }}
+          <option value="{{ . }}">{{ . }}</option>
+          {{ end }}
+        </select>
+      </div>
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Item Name *</label>
+        <input type="text" name="title" required placeholder="e.g., HP Calculator" class="w-full rounded-lg border-slate-300 mt-1">
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Color</label>
+        <select name="color" class="w-full rounded-lg border-slate-300 mt-1">
+          {{ range .colors }}
+          <option value="{{ . }}">{{ . }}</option>
+          {{ end }}
+        </select>
+        <input type="text" name="color_other" placeholder="If other, type color name" class="w-full rounded-lg border-slate-300 mt-2">
+      </div>
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Brand</label>
+        <input type="text" name="brand" placeholder="e.g., HP" class="w-full rounded-lg border-slate-300 mt-1">
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Location *</label>
+        <select name="location" required class="w-full rounded-lg border-slate-300 mt-1">
+          {{ range .locations }}
+          <option value="{{ . }}">{{ . }}</option>
+          {{ end }}
+        </select>
+      </div>
+      <div>
+        <label class="text-sm font-semibold text-slate-700">Date</label>
+        <input type="date" name="date" value="{{ now }}" class="w-full rounded-lg border-slate-300 mt-1">
+      </div>
+    </div>
+
+    <div>
+      <label class="text-sm font-semibold text-slate-700">Description</label>
+      <textarea name="description" rows="4" class="w-full rounded-lg border-slate-300 mt-1" placeholder="Describe your item..."></textarea>
+    </div>
+
+    <div>
+      <label class="text-sm font-semibold text-slate-700">Photos {{ if eq .type "found" }}*(required){{ end }}</label>
+      <input type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }} class="mt-2 block w-full text-sm text-slate-700">
+      <p class="text-xs text-slate-500 mt-1">Max 5MB per file. JPG or PNG. Lost: optional, Found: required.</p>
+    </div>
+
+    <div class="pt-2 flex gap-2">
+      <button type="submit" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:-translate-y-[1px] transition">Submit Report</button>
+      <a href="/report" class="bg-white border border-slate-300 text-slate-800 px-4 py-2 rounded-lg text-sm font-semibold hover:-translate-y-[1px] transition">Cancel</a>
+    </div>
+  </form>
+</div>
+{{ end }}
