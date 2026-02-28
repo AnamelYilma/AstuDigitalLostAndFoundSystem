@@ -622,3 +622,28 @@ main {
         text-align: center;
     }
 }
+/* Upload widget overrides */
+.upload-widget { position: relative; }
+.upload-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 150px;
+    border: 2px dashed #94a3b8;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #1f2937;
+    cursor: pointer;
+    padding: 18px;
+    text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.upload-dropzone.drag-active {
+    border-color: #0f172a;
+    background: #e2e8f0;
+}
+.file-input-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.upload-preview { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+.upload-preview .badge { background: #e2e8f0; color: #0f172a; border-radius: 999px; padding: 4px 8px; font-size: 12px; }
