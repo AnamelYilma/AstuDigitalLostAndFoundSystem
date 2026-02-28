@@ -2,67 +2,74 @@
 {{ template "layout.html" . }}
 
 {{ define "dashboard_content" }}
-<div class="dashboard">
-    <h2>Welcome, {{ .user.Name }}!</h2>
-    <p>Manage your reports, requests, and updates from one place.</p>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number">{{ .stats.total_lost }}</div>
-            <div>Lost Items</div>
-            
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ .stats.total_found }}</div>
-            <div>Found Items</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ .stats.total_claims }}</div>
-            <div>Total Claims</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ .stats.pending_claims }}</div>
-            <div>Pending Claims</div>
-        </div>
-    </div>
-    
-    <div class="dashboard-actions">
-        <a href="/report/new?type=lost" class="btn btn-primary">Report Lost Item</a>
-        <a href="/report/new?type=found" class="btn btn-primary">Report Found Item</a>
-        <a href="/report" class="btn btn-secondary">Report View</a>
-        <a href="/notifications" class="btn btn-secondary notify-link">
-            Notifications{{ if gt .unread_count 0 }}<sup class="notify-badge">{{ .unread_count }}</sup>{{ end }}
-        </a>
-    </div>
+<div class="space-y-6">
+  <div>
+    <p class="text-sm text-slate-500">Welcome back</p>
+    <h2 class="text-2xl font-bold text-slate-900">Hello, {{ .user.Name }}</h2>
+  </div>
 
-    <h3>My Reported Items</h3>
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Location</th>
-                <th>Approval</th>
-                <th>Claim Status</th>
-                <th>Admin Remark</th>
-            </tr>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs uppercase tracking-wide text-slate-500">Lost</p>
+      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_lost }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs uppercase tracking-wide text-slate-500">Found</p>
+      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_found }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs uppercase tracking-wide text-slate-500">Claims</p>
+      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_claims }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs uppercase tracking-wide text-slate-500">Pending Claims</p>
+      <p class="text-3xl font-semibold text-slate-900">{{ .stats.pending_claims }}</p>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <a href="/report/new?type=lost" class="bg-sky-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Report Lost</a>
+    <a href="/report/new?type=found" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Report Found</a>
+    <a href="/report" class="bg-white text-slate-900 border border-slate-200 px-4 py-2 rounded-lg font-semibold shadow-sm hover:-translate-y-[1px] transition">Report View</a>
+    <a href="/notifications" class="bg-white text-slate-900 border border-slate-200 px-4 py-2 rounded-lg font-semibold shadow-sm hover:-translate-y-[1px] transition">
+      Notifications{{ if gt .unread_count 0 }} <span class="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[11px]">{{ .unread_count }}</span>{{ end }}
+    </a>
+  </div>
+
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-slate-900">My Reported Items</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-slate-600">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">Title</th>
+            <th class="px-4 py-3 text-left font-semibold">Type</th>
+            <th class="px-4 py-3 text-left font-semibold">Location</th>
+            <th class="px-4 py-3 text-left font-semibold">Approval</th>
+            <th class="px-4 py-3 text-left font-semibold">Claim Status</th>
+            <th class="px-4 py-3 text-left font-semibold">Admin Remark</th>
+          </tr>
         </thead>
-        <tbody>
-            {{ range .my_items }}
-            <tr>
-                <td>{{ .Title }}</td>
-                <td>{{ .Type }}</td>
-                <td>{{ .Location }}</td>
-                <td><span class="badge {{ .ApprovalStatus }}">{{ .ApprovalStatus }}</span></td>
-                <td><span class="badge {{ .Status }}">{{ .Status }}</span></td>
-                <td>{{ if .AdminRemarks }}{{ .AdminRemarks }}{{ else }}-{{ end }}</td>
-            </tr>
-            {{ else }}
-            <tr>
-                <td colspan="6">No items reported yet.</td>
-            </tr>
-            {{ end }}
+        <tbody class="divide-y divide-slate-100">
+          {{ range .my_items }}
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3">{{ .Title }}</td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .Type }}</span></td>
+            <td class="px-4 py-3">{{ .Location }}</td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .ApprovalStatus }}</span></td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .Status }}</span></td>
+            <td class="px-4 py-3 text-slate-600">{{ if .AdminRemarks }}{{ .AdminRemarks }}{{ else }}-{{ end }}</td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td class="px-4 py-6 text-center text-slate-500" colspan="6">No items reported yet.</td>
+          </tr>
+          {{ end }}
         </tbody>
-    </table>
+      </table>
+    </div>
+  </div>
 </div>
 {{ end }}

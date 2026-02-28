@@ -2,29 +2,31 @@
 {{ template "layout.html" . }}
 
 {{ define "index_content" }}
-<div class="hero">
-    <h1>ASTU Digital Lost & Found</h1>
-    <p>Report lost items, find missing belongings, and reunite with your possessions</p>
-    
-    <div class="hero-buttons">
-        <a href="/report" class="btn btn-primary">Browse Reports</a>
-        <a href="/report/new?type=found" class="btn btn-secondary">Report Found Item</a>
-        <a href="/report/new?type=lost" class="btn btn-secondary">Report Lost Item</a>
+<section class="bg-gradient-to-r from-sky-500 via-indigo-500 to-slate-900 text-white rounded-2xl p-8 md:p-12 shadow-lg">
+  <div class="max-w-3xl space-y-4">
+    <p class="text-xs uppercase tracking-[0.2em] font-semibold text-slate-100/80">ASTU Digital Lost &amp; Found</p>
+    <h1 class="text-3xl md:text-4xl font-bold leading-tight">Report, find, and reconnect items across campus.</h1>
+    <p class="text-sm md:text-base text-slate-100/90">One place for lost and found items, approvals, and secure contact between students and admins.</p>
+    <div class="flex flex-wrap gap-3 pt-2">
+      <a href="/report" class="bg-white text-slate-900 px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Browse Reports</a>
+      <a href="/report/new?type=found" class="bg-slate-900/80 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900 transition">Report Found</a>
+      <a href="/report/new?type=lost" class="bg-slate-900/80 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900 transition">Report Lost</a>
     </div>
-</div>
+  </div>
+</section>
 
-<div class="features">
-    <div class="feature-card">
-        <h3>Report Lost Items</h3>
-        <p>Lost something? Report it here and increase your chances of finding it.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Report Found Items</h3>
-        <p>Found something? Help someone get their belonging back.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Reports & Requests</h3>
-        <p>Browse all reports and send requests when you find a match.</p>
-    </div>
-</div>
+<section class="mt-8 grid md:grid-cols-3 gap-4">
+  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+    <h3 class="text-lg font-semibold text-slate-900">Report Lost Items</h3>
+    <p class="text-slate-600 text-sm mt-2">Submit details and optional photos to help others identify your belongings.</p>
+  </div>
+  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+    <h3 class="text-lg font-semibold text-slate-900">Report Found Items</h3>
+    <p class="text-slate-600 text-sm mt-2">Log found items with location and time so owners can reach you via admin.</p>
+  </div>
+  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+    <h3 class="text-lg font-semibold text-slate-900">Reports &amp; Requests</h3>
+    <p class="text-slate-600 text-sm mt-2">Filter all reports, then submit claim or found-match requests in one place.</p>
+  </div>
+</section>
 {{ end }}

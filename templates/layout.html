@@ -10,9 +10,9 @@
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900">
     <nav class="w-full bg-slate-900 text-white shadow">
-        <div class="w-full px-6 py-3 flex items-center justify-between">
-            <a href="/" class="font-bold text-xl">ASTU Lost &amp; Found</a>
-            <div class="flex items-center gap-4 text-sm font-medium flex-wrap">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+            <a href="/" class="font-semibold text-lg tracking-tight">ASTU Lost &amp; Found</a>
+            <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
                 <a href="/" class="hover:opacity-80">Home</a>
                 <a href="/report" class="hover:opacity-80">Report View</a>
                 {{ if .user }}
@@ -20,7 +20,7 @@
                     <a href="/report/new?type=found" class="hover:opacity-80">Report Found</a>
                     <a href="/notifications" class="relative hover:opacity-80 {{ if gt .unread_count 0 }}font-bold{{ end }}">
                         Notifications
-                        {{ if gt .unread_count 0 }}<sup class="ml-1 inline-flex min-w-[16px] h-[16px] px-1 items-center justify-center rounded-full bg-red-500 text-white text-[11px]">{{ .unread_count }}</sup>{{ end }}
+                        {{ if gt .unread_count 0 }}<span class="ml-1 inline-flex min-w-[18px] h-[18px] px-1 items-center justify-center rounded-full bg-rose-500 text-white text-[11px]">{{ .unread_count }}</span>{{ end }}
                     </a>
                     <a href="/logout" class="hover:opacity-80">Logout ({{ .user.Name }})</a>
                 {{ else }}
@@ -31,7 +31,7 @@
         </div>
     </nav>
 
-    <main class="w-full px-6 py-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {{ if eq .content_template "index_content" }}
             {{ template "index_content" . }}
         {{ else if eq .content_template "login_content" }}
@@ -59,9 +59,9 @@
         {{ end }}
     </main>
 
-    <footer class="w-full bg-slate-800 text-white py-4 px-6 mt-8">
-        <div class="w-full">
-            <p>&copy; 2024 ASTU Lost &amp; Found System</p>
+    <footer class="w-full bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm">
+            &copy; 2024 ASTU Lost &amp; Found System
         </div>
     </footer>
 </body>
