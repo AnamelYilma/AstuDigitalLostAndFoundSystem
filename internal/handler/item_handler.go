@@ -44,19 +44,26 @@ func (h *ItemHandler) ShowReportForm(c *gin.Context) {
 	if itemType != "lost" && itemType != "found" {
 		itemType = "lost"
 	}
+	categories := service.ItemCategories()
+	locations := service.ASTULocations()
+	colors := service.ColorOptions()
 
 	renderHTML(c, http.StatusOK, "report.html", gin.H{
 		"title":            "Report Item",
 		"user":             user,
 		"type":             itemType,
-		"locations":        service.ASTULocations(),
-		"colors":           service.ColorOptions(),
+		"locations":        locations,
+		"colors":           colors,
+		"categories":       categories,
 		"content_template": "report_content",
 	})
 }
 
 func (h *ItemHandler) ReportItem(c *gin.Context) {
 	u := c.MustGet("user").(model.User)
+	locations := service.ASTULocations()
+	colors := service.ColorOptions()
+	categories := service.ItemCategories()
 
 	itemType := c.PostForm("type")
 	title := c.PostForm("title")
@@ -76,8 +83,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             "lost",
 			"error":            "Invalid report type",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -88,8 +96,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Invalid category value",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -100,8 +109,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Please select a valid ASTU location",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return
@@ -112,8 +122,9 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 			"user":             u,
 			"type":             itemType,
 			"error":            "Please provide item color",
-			"locations":        service.ASTULocations(),
-			"colors":           service.ColorOptions(),
+			"locations":        locations,
+			"colors":           colors,
+			"categories":       categories,
 			"content_template": "report_content",
 		})
 		return

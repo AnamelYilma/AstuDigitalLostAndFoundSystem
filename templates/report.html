@@ -2,7 +2,7 @@
 {{ template "layout.html" . }}
 
 {{ define "report_content" }}
-<div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+<div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
   <div class="flex items-center justify-between mb-4">
     <div>
       <p class="text-xs uppercase tracking-[0.18em] text-slate-500 font-semibold">Report</p>
@@ -14,14 +14,14 @@
   <div class="mb-4 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 px-4 py-3 text-sm">{{ .error }}</div>
   {{ end }}
 
-  <form method="POST" action="/report/new" enctype="multipart/form-data" class="space-y-4">
+  <form method="POST" action="/report/new" enctype="multipart/form-data" class="space-y-5">
     <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
     <input type="hidden" name="type" value="{{ .type }}">
 
     <div class="grid sm:grid-cols-2 gap-4">
       <div>
         <label class="text-sm font-semibold text-slate-700">Category *</label>
-        <select name="category" required class="w-full rounded-lg border-slate-300 mt-1">
+        <select name="category" required class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
           {{ range .categories }}
           <option value="{{ . }}">{{ . }}</option>
           {{ end }}
@@ -29,30 +29,30 @@
       </div>
       <div>
         <label class="text-sm font-semibold text-slate-700">Item Name *</label>
-        <input type="text" name="title" required placeholder="e.g., HP Calculator" class="w-full rounded-lg border-slate-300 mt-1">
+        <input type="text" name="title" required placeholder="e.g., HP Calculator" class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
       </div>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-4">
       <div>
         <label class="text-sm font-semibold text-slate-700">Color</label>
-        <select name="color" class="w-full rounded-lg border-slate-300 mt-1">
+        <select name="color" class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
           {{ range .colors }}
           <option value="{{ . }}">{{ . }}</option>
           {{ end }}
         </select>
-        <input type="text" name="color_other" placeholder="If other, type color name" class="w-full rounded-lg border-slate-300 mt-2">
+        <input type="text" name="color_other" placeholder="If other, type color name" class="w-full rounded-lg border border-slate-300 mt-2 px-3 py-2 text-sm h-11">
       </div>
       <div>
         <label class="text-sm font-semibold text-slate-700">Brand</label>
-        <input type="text" name="brand" placeholder="e.g., HP" class="w-full rounded-lg border-slate-300 mt-1">
+        <input type="text" name="brand" placeholder="e.g., HP" class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
       </div>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-4">
       <div>
         <label class="text-sm font-semibold text-slate-700">Location *</label>
-        <select name="location" required class="w-full rounded-lg border-slate-300 mt-1">
+        <select name="location" required class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
           {{ range .locations }}
           <option value="{{ . }}">{{ . }}</option>
           {{ end }}
@@ -60,19 +60,24 @@
       </div>
       <div>
         <label class="text-sm font-semibold text-slate-700">Date</label>
-        <input type="date" name="date" value="{{ now }}" class="w-full rounded-lg border-slate-300 mt-1">
+        <input type="date" name="date" value="{{ now }}" class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm h-11">
       </div>
     </div>
 
     <div>
       <label class="text-sm font-semibold text-slate-700">Description</label>
-      <textarea name="description" rows="4" class="w-full rounded-lg border-slate-300 mt-1" placeholder="Describe your item..."></textarea>
+      <textarea name="description" rows="4" class="w-full rounded-lg border border-slate-300 mt-1 px-3 py-2 text-sm" placeholder="Describe your item..."></textarea>
     </div>
 
     <div>
       <label class="text-sm font-semibold text-slate-700">Photos {{ if eq .type "found" }}*(required){{ end }}</label>
-      <input type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }} class="mt-2 block w-full text-sm text-slate-700">
-      <p class="text-xs text-slate-500 mt-1">Max 5MB per file. JPG or PNG. Lost: optional, Found: required.</p>
+      <label for="images" class="mt-2 block border-2 border-dashed border-slate-300 rounded-xl p-5 bg-slate-50 hover:border-slate-400 transition cursor-pointer text-center">
+        <p class="text-sm font-semibold text-slate-700">Drag & drop images here</p>
+        <p class="text-xs text-slate-500">or</p>
+        <span class="mt-2 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow">Choose files</span>
+        <p class="text-xs text-slate-500 mt-2">Max 5MB per file. JPG or PNG. Lost: optional, Found: required.</p>
+      </label>
+      <input id="images" type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }} class="sr-only">
     </div>
 
     <div class="pt-2 flex gap-2">

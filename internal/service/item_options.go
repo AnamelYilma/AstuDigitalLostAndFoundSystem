@@ -41,7 +41,6 @@ var itemTypes = []string{
 }
 
 var itemCategories = []string{
-	
 	"electronics",
 	"book & document",
 	"study tool",
