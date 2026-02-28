@@ -219,14 +219,23 @@ func (h *ItemHandler) Search(c *gin.Context) {
 		isAdmin = u.Role == "admin"
 	}
 
+	selectedCategory := ""
+	selectedLocation := ""
+	selectedType := ""
+	selectedColor := ""
+	selectedDateFrom := ""
+	selectedDateTo := ""
+
 	if category := c.Query("category"); category != "" {
 		if service.IsValidCategory(category) {
 			filters["category"] = category
+			selectedCategory = category
 		}
 	}
 	if location := c.Query("location"); location != "" {
 		if service.IsValidASTULocation(location) {
 			filters["location"] = location
+			selectedLocation = location
 		}
 	}
 	var selectedColors []string
@@ -241,20 +250,26 @@ func (h *ItemHandler) Search(c *gin.Context) {
 	}
 	if len(selectedColors) > 0 {
 		filters["colors"] = selectedColors
+		if len(selectedColors) == 1 {
+			selectedColor = selectedColors[0]
+		}
 	}
 	if itemType := c.Query("type"); itemType != "" {
 		if service.IsValidItemType(itemType) {
 			filters["type"] = itemType
+			selectedType = itemType
 		}
 	}
 	if dateFrom := c.Query("date_from"); dateFrom != "" {
 		if _, err := time.Parse("2006-01-02", dateFrom); err == nil {
 			filters["date_from"] = dateFrom
+			selectedDateFrom = dateFrom
 		}
 	}
 	if dateTo := c.Query("date_to"); dateTo != "" {
 		if _, err := time.Parse("2006-01-02", dateTo); err == nil {
 			filters["date_to"] = dateTo
+			selectedDateTo = dateTo
 		}
 	}
 	if status := c.Query("status"); status != "" {
@@ -279,15 +294,22 @@ func (h *ItemHandler) Search(c *gin.Context) {
 	}
 
 	renderHTML(c, http.StatusOK, "items.html", gin.H{
-		"title":            "Search Results",
-		"items":            items,
-		"filters":          filters,
-		"selected_colors":  selectedColors,
-		"user":             user,
-		"is_admin":         isAdmin,
-		"locations":        service.ASTULocations(),
-		"colors":           service.ColorOptions(),
-		"content_template": "items_content",
+		"title":              "Report View",
+		"items":              items,
+		"filters":            filters,
+		"selected_colors":    selectedColors,
+		"user":               user,
+		"is_admin":           isAdmin,
+		"locations":          service.ASTULocations(),
+		"colors":             service.ColorOptions(),
+		"categories":         service.ItemCategories(),
+		"selected_category":  selectedCategory,
+		"selected_location":  selectedLocation,
+		"selected_type":      selectedType,
+		"selected_color":     selectedColor,
+		"selected_date_from": selectedDateFrom,
+		"selected_date_to":   selectedDateTo,
+		"content_template":   "items_content",
 	})
 }
 
@@ -296,7 +318,7 @@ func (h *ItemHandler) ShowItem(c *gin.Context) {
 
 	item, err := h.itemService.GetItemByID(uint(id))
 	if err != nil {
-		c.Redirect(http.StatusSeeOther, "/search")
+		c.Redirect(http.StatusSeeOther, "/report")
 		return
 	}
 
@@ -312,12 +334,12 @@ func (h *ItemHandler) ShowItem(c *gin.Context) {
 
 	if item.ApprovalStatus != "approved" {
 		if user == nil {
-			c.Redirect(http.StatusSeeOther, "/search")
+			c.Redirect(http.StatusSeeOther, "/report")
 			return
 		}
 		u := user.(model.User)
 		if u.Role != "admin" && u.ID != item.UserID {
-			c.Redirect(http.StatusSeeOther, "/search")
+			c.Redirect(http.StatusSeeOther, "/report")
 			return
 		}
 	}

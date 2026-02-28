@@ -40,7 +40,6 @@ func main() {
 		"templates/error.html",
 		"templates/dashboard.html",
 		"templates/report.html",
-		"templates/search.html",
 		"templates/items.html",
 		"templates/item.html",
 		"templates/notifications.html",
@@ -84,16 +83,17 @@ func main() {
 	r.POST("/register", authHandler.Register)
 	r.GET("/logout", authHandler.Logout)
 
-	r.GET("/search", itemHandler.ShowSearch)
-	r.GET("/items", itemHandler.Search)
+	r.GET("/report", itemHandler.Search)
+	r.GET("/items", func(c *gin.Context) { c.Redirect(303, "/report") })
+	r.GET("/search", func(c *gin.Context) { c.Redirect(303, "/report") })
 	r.GET("/item/:id", itemHandler.ShowItem)
 
 	protected := r.Group("/")
 	protected.Use(middleware.AuthRequired())
 	{
 		protected.GET("/dashboard", itemHandler.Dashboard)
-		protected.GET("/report", itemHandler.ShowReportForm)
-		protected.POST("/report", itemHandler.ReportItem)
+		protected.GET("/report/new", itemHandler.ShowReportForm)
+		protected.POST("/report/new", itemHandler.ReportItem)
 		protected.POST("/claim", itemHandler.ClaimItem)
 		protected.GET("/notifications", itemHandler.ShowNotifications)
 		protected.POST("/notifications/read", itemHandler.MarkNotificationsRead)

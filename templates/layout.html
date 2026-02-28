@@ -4,33 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .title }} - ASTU Lost & Found</title>
+    <title>{{ if .title }}{{ .title }} - ASTU Lost & Found{{ else }}ASTU Lost & Found{{ end }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="/" class="logo">ASTU Lost & Found</a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                
-                <a href="/search">Search</a>
+<body class="min-h-screen bg-slate-100 text-slate-900">
+    <nav class="w-full bg-slate-900 text-white shadow">
+        <div class="w-full px-6 py-3 flex items-center justify-between">
+            <a href="/" class="font-bold text-xl">ASTU Lost &amp; Found</a>
+            <div class="flex items-center gap-4 text-sm font-medium flex-wrap">
+                <a href="/" class="hover:opacity-80">Home</a>
+                <a href="/report" class="hover:opacity-80">Report View</a>
                 {{ if .user }}
-                    <a href="/report?type=lost">Report Lost</a>
-                    <a href="/report?type=found">Report Found</a>
-                    <a href="/notifications" class="notify-link {{ if gt .unread_count 0 }}unread{{ end }}">
-                        Notifications{{ if gt .unread_count 0 }}<sup class="notify-badge">{{ .unread_count }}</sup>{{ end }}
+                    <a href="/report/new?type=lost" class="hover:opacity-80">Report Lost</a>
+                    <a href="/report/new?type=found" class="hover:opacity-80">Report Found</a>
+                    <a href="/notifications" class="relative hover:opacity-80 {{ if gt .unread_count 0 }}font-bold{{ end }}">
+                        Notifications
+                        {{ if gt .unread_count 0 }}<sup class="ml-1 inline-flex min-w-[16px] h-[16px] px-1 items-center justify-center rounded-full bg-red-500 text-white text-[11px]">{{ .unread_count }}</sup>{{ end }}
                     </a>
-                    <a href="/logout">Logout ({{ .user.Name }})</a>
+                    <a href="/logout" class="hover:opacity-80">Logout ({{ .user.Name }})</a>
                 {{ else }}
-                    <a href="/login">Login</a>
-                    <a href="/register">Register</a>
+                    <a href="/login" class="hover:opacity-80">Login</a>
+                    <a href="/register" class="hover:opacity-80">Register</a>
                 {{ end }}
             </div>
         </div>
     </nav>
-    
-    <main class="container">
+
+    <main class="w-full px-6 py-6">
         {{ if eq .content_template "index_content" }}
             {{ template "index_content" . }}
         {{ else if eq .content_template "login_content" }}
@@ -41,8 +42,6 @@
             {{ template "dashboard_content" . }}
         {{ else if eq .content_template "report_content" }}
             {{ template "report_content" . }}
-        {{ else if eq .content_template "search_content" }}
-            {{ template "search_content" . }}
         {{ else if eq .content_template "items_content" }}
             {{ template "items_content" . }}
         {{ else if eq .content_template "item_content" }}
@@ -59,10 +58,10 @@
             {{ template "error_content" . }}
         {{ end }}
     </main>
-    
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 ASTU Lost & Found System</p>
+
+    <footer class="w-full bg-slate-800 text-white py-4 px-6 mt-8">
+        <div class="w-full">
+            <p>&copy; 2024 ASTU Lost &amp; Found System</p>
         </div>
     </footer>
 </body>
