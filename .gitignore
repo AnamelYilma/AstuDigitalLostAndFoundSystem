@@ -6,3 +6,4 @@ report to learn.md
 !.env.example
 tmp/
 air_build.log
+/docs

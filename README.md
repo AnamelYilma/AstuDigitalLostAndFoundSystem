@@ -50,6 +50,36 @@ Logs: "Server starting on http://localhost:8080".
 - Claims/Requests: users submit claim or found-match; admin approves/rejects; notifications send contact info to both sides on approval.
 - Admin: approves/rejects posts, manages claims, removes items, sees stats.
 
+## System Flow (end-to-end)
+1) **Report creation**
+   - Student logs in ➜ opens `/report/new` (type=lost|found).
+   - Submits details + optional photos (lost) / required photos (found).
+   - Item stored as `pending` + `open`; invisible to public until approved.
+2) **Admin review**
+   - Admin dashboard lists pending posts.
+   - Admin approves ➜ item becomes `approved` and shows on public Report View.
+   - Admin rejects ➜ item stays hidden; poster sees remark.
+3) **Public browsing**
+   - Anyone can open `/report` and filter by type, category, location, color, date.
+   - Only `approved` items are shown to guests; owners/admin can see their own pending items via dashboard.
+4) **Requests / claims**
+   - On item page:
+     - If item type = **found** ➜ owner submits **Claim Request**.
+     - If item type = **lost** ➜ finder submits **Found Match Request**.
+   - Request goes to admin; item status stays `open`.
+5) **Admin decision on requests**
+   - Admin approves ➜ item status set to `claimed`; both users get notifications containing each other's contact (name, student ID, phone) to meet offline.
+   - Admin rejects ➜ request closed; item remains `open`.
+6) **Notifications**
+   - Stored per user; badge count shown in navbar when logged in.
+   - Users view/mark read at `/notifications`.
+
+### Visibility & security rules
+- Public list shows only `approved` items; contact info hidden until a request is approved.
+- Only admins can approve/reject posts and requests.
+- A user cannot request their own post.
+- Image uploads validated (type/size); data validated against allowed enums (type/category/location/color).
+
 ## Security
 - Password hashing (bcrypt in `pkg/utils/hash.go`).
 - Session cookies (HttpOnly, SameSite=Lax, optional Secure via env).
