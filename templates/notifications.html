@@ -1,45 +1,134 @@
 {{ template "layout.html" . }}
 
 {{ define "notifications_content" }}
-<div class="dashboard">
-    <div class="item-header">
-        <h2>My Notifications</h2>
-        <form method="POST" action="/notifications/read">
-            <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
-            <button type="submit" class="btn btn-secondary">Mark All Read</button>
-        </form>
+<div class="space-y-4">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-900">My Notifications</h2>
+      <p class="text-slate-600 text-sm">Messages are shown in full blocks; copy contact numbers with one click.</p>
     </div>
+    <form method="POST" action="/notifications/read" class="shrink-0">
+      <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
+      <button type="submit" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition">Mark All Read</button>
+    </form>
+  </div>
 
-    <table class="admin-table notifications-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th>Date</th>
-            </tr>
-            
-        </thead>
-        <tbody>
-            {{ range .notifications }}
-            <tr class="{{ if not .IsRead }}notif-unread{{ end }}">
-                <td>{{ .Title }}</td>
-                <td>{{ .Message }}</td>
-                <td>
-                    {{ if .IsRead }}
-                    <span class="badge approved">read</span>
-                    {{ else }}
-                    <span class="badge pending">new</span>
-                    {{ end }}
-                </td>
-                <td>{{ .CreatedAt.Format "Jan 02, 2006 15:04" }}</td>
-            </tr>
-            {{ else }}
-            <tr>
-                <td colspan="4">No notifications yet.</td>
-            </tr>
-            {{ end }}
-        </tbody>
-    </table>
+  {{ if .notifications }}
+    <div class="space-y-3">
+      {{ range .notifications }}
+      <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 {{ if not .IsRead }}ring-2 ring-amber-200{{ end }}" data-notif-card>
+        <div class="flex flex-wrap items-start gap-2">
+          <div class="flex-1">
+            <p class="text-xs text-slate-500">{{ .CreatedAt.Format "Jan 02, 2006 15:04" }}</p>
+            <h3 class="text-base font-semibold text-slate-900">{{ .Title }}</h3>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold {{ if .IsRead }}bg-emerald-100 text-emerald-800{{ else }}bg-amber-100 text-amber-800{{ end }}">
+            {{ if .IsRead }}read{{ else }}new{{ end }}
+          </span>
+        </div>
+
+        <div class="mt-3 grid gap-2" data-message-block>
+          <div class="notif-message whitespace-pre-line text-sm text-slate-800 leading-relaxed">{{ .Message }}</div>
+          <div class="flex flex-wrap gap-2 copy-targets"></div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  {{ else }}
+    <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-600">No notifications yet.</div>
+  {{ end }}
 </div>
+
+<script>
+(function() {
+  const cards = document.querySelectorAll('[data-notif-card]');
+  if (!cards) return;
+
+  const phoneRegex = /Phone:\s*([+0-9\-\s]+)/gi;
+  const nameRegex = /Name:\s*([^\n]+)/gi;
+
+  cards.forEach(card => {
+    const messageEl = card.querySelector('.notif-message');
+    const targetsEl = card.querySelector('.copy-targets');
+    if (!messageEl || !targetsEl) return;
+
+    const text = messageEl.innerText;
+    renderContactBlocks(card, text);
+
+    const phones = [...text.matchAll(phoneRegex)];
+    const names = [...text.matchAll(nameRegex)];
+    const seen = new Set();
+
+    phones.forEach((m, idx) => {
+      const phone = (m[1] || '').trim();
+      if (!phone || seen.has(phone)) return;
+      seen.add(phone);
+      const name = (names[idx] && names[idx][1]) ? names[idx][1].trim() : 'Contact';
+      const btn = document.createElement('button');
+      const firstName = name.split(' ')[0] || name;
+      btn.type = 'button';
+      btn.textContent = `Copy ${firstName}'s phone`;
+      btn.className = 'px-3 py-1.5 rounded-md bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition';
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(phone);
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = `Copy ${firstName}'s phone`; }, 1500);
+        } catch (err) {
+          alert('Copy failed. Please copy manually: ' + phone);
+        }
+      });
+      targetsEl.appendChild(btn);
+    });
+  });
+
+  function renderContactBlocks(card, text) {
+    const container = document.createElement('div');
+    container.className = 'mt-3 flex flex-col md:flex-row gap-3';
+    const sections = [];
+    let current = null;
+    const lines = text.split(/\r?\n/);
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (/^contact /i.test(trimmed)) {
+        if (current) sections.push(current);
+        current = { title: trimmed, body: [] };
+        return;
+      }
+      if (/^your details/i.test(trimmed)) {
+        if (current) sections.push(current);
+        current = { title: trimmed, body: [] };
+        return;
+      }
+      if (current) current.body.push(trimmed);
+    });
+    if (current) sections.push(current);
+
+    if (sections.length === 0) return;
+
+    sections.forEach(sec => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'flex-1 min-w-[240px] rounded-lg border border-slate-200 bg-slate-50 p-3';
+      const titleEl = document.createElement('p');
+      titleEl.className = 'text-xs font-semibold uppercase tracking-wide text-slate-500';
+      titleEl.textContent = sec.title;
+      cardEl.appendChild(titleEl);
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'mt-1 space-y-1 text-sm text-slate-800';
+      sec.body.filter(Boolean).forEach(line => {
+        const p = document.createElement('p');
+        p.textContent = line;
+        bodyEl.appendChild(p);
+      });
+      cardEl.appendChild(bodyEl);
+      container.appendChild(cardEl);
+    });
+
+    const messageBlock = card.querySelector('[data-message-block]');
+    if (messageBlock) {
+      messageBlock.insertAdjacentElement('afterend', container);
+    }
+  }
+})();
+</script>
 {{ end }}

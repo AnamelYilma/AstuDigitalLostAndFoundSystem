@@ -9,32 +9,32 @@
 
   <form method="GET" action="/admin/items" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
     <div class="flex flex-wrap gap-3">
-      <input type="text" name="q" value="{{ .selected_q }}" placeholder="Keyword" class="w-56 rounded-lg border-slate-300 text-sm px-3 py-2">
-      <select name="type" class="w-40 rounded-lg border-slate-300 text-sm">
+      <input type="text" name="q" value="{{ .selected_q }}" placeholder="Keyword" class="w-56 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+      <select name="type" class="w-40 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         <option value="">All types</option>
         <option value="lost" {{ if eq .selected_type "lost" }}selected{{ end }}>Lost</option>
         <option value="found" {{ if eq .selected_type "found" }}selected{{ end }}>Found</option>
       </select>
-      <select name="status" class="w-40 rounded-lg border-slate-300 text-sm">
+      <select name="status" class="w-40 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         <option value="">All approvals</option>
         <option value="pending" {{ if eq .selected_status "pending" }}selected{{ end }}>Pending</option>
         <option value="approved" {{ if eq .selected_status "approved" }}selected{{ end }}>Approved</option>
         <option value="rejected" {{ if eq .selected_status "rejected" }}selected{{ end }}>Rejected</option>
       </select>
-      <select name="category" class="w-44 rounded-lg border-slate-300 text-sm">
+      <select name="category" class="w-44 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         <option value="">All categories</option>
         {{ range .categories }}
         <option value="{{ . }}" {{ if eq $.selected_category . }}selected{{ end }}>{{ . }}</option>
         {{ end }}
       </select>
-      <select name="location" class="w-44 rounded-lg border-slate-300 text-sm">
+      <select name="location" class="w-44 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         <option value="">All locations</option>
         {{ range .locations }}
         <option value="{{ . }}" {{ if eq $.selected_location . }}selected{{ end }}>{{ . }}</option>
         {{ end }}
       </select>
-      <input type="date" name="date_from" value="{{ .selected_date_from }}" class="rounded-lg border-slate-300 text-sm px-3 py-2">
-      <input type="date" name="date_to" value="{{ .selected_date_to }}" class="rounded-lg border-slate-300 text-sm px-3 py-2">
+      <input type="date" name="date_from" value="{{ .selected_date_from }}" max="{{ now }}" class="px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+      <input type="date" name="date_to" value="{{ .selected_date_to }}" max="{{ now }}" class="px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
     </div>
     <div class="mt-3 flex flex-wrap gap-2">
       <button type="submit" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:-translate-y-[1px] transition">Filter</button>
@@ -91,7 +91,7 @@
               <form method="POST" action="/admin/items/update" class="flex flex-col gap-2">
                 <input type="hidden" name="csrf_token" value="{{ $.csrf_token }}">
                 <input type="hidden" name="item_id" value="{{ .ID }}">
-                <input type="text" name="remarks" placeholder="Remarks" class="rounded-lg border-slate-300 text-sm px-2 py-1">
+                <input type="text" name="remarks" placeholder="Remarks" class="px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
                 <div class="flex gap-2">
                   <button type="submit" name="approval_status" value="approved" class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Approve</button>
                   <button type="submit" name="approval_status" value="rejected" class="bg-rose-600 text-white px-3 py-1 rounded-lg text-xs font-semibold">Reject</button>

@@ -1,13 +1,6 @@
 # ASTU Digital Lost & Found
 
 Modern web app for reporting, browsing, and approving lost/found items at ASTU.
-## Guest page
-<img width="1578" height="881" alt="image" src="https://github.com/user-attachments/assets/45d1b489-27c0-4cad-81d0-feb59fb13f90" />
-##  User page
-<img width="1601" height="834" alt="image" src="https://github.com/user-attachments/assets/25d30e5d-6bfd-43e3-b5bc-439adabbf26e" />
-##  Admin Page
-<img width="1670" height="878" alt="image" src="https://github.com/user-attachments/assets/eb47e05a-c86e-4629-b94e-8da4ee3d3380" />
-
 
 ## Stack
 - Go 1.21+, Gin web framework
@@ -31,9 +24,9 @@ Modern web app for reporting, browsing, and approving lost/found items at ASTU.
 1) Set env (or `.env`):
 ```
 DB_HOST=localhost
-DB_PORT=0000 (Thisis fake)
+DB_PORT=000
 DB_USER=postgres
-DB_PASSWORD=yourpass (also fake)
+DB_PASSWORD=yourpass
 DB_NAME=NameDatabse
 DB_SSLMODE=disable
 # optional: DATABASE_URL=postgres://user:pass@host:port/db?sslmode=disable

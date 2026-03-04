@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 )
-
 type ItemService struct {
 	itemRepo *repository.ItemRepository
 }
@@ -74,8 +73,10 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 		return nil, errors.New("item title is required")
 	}
 	if strings.TrimSpace(date) != "" {
-		if _, err := time.Parse("2006-01-02", date); err != nil {
+		if parsed, err := time.Parse("2006-01-02", date); err != nil {
 			return nil, errors.New("invalid date format")
+		} else if parsed.After(time.Now()) {
+			return nil, errors.New("date cannot be in the future")
 		}
 	}
 	primaryImage := ""
@@ -104,6 +105,14 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 	if err := s.itemRepo.CreateItemImages(item.ID, imagePaths); err != nil {
 		return nil, err
 	}
+
+	// Notify admins to review the new post (pending).
+	_ = s.notifyAdmins(
+		"New Post Pending Approval",
+		fmt.Sprintf("A %s item was submitted and needs review.\n\nTitle: %s\nCategory: %s\nLocation: %s\nReported by: %d (user id)\n\nOpen Admin > Items to approve/reject.",
+			itemType, title, category, location, userID),
+	)
+
 	return item, nil
 }
 
@@ -154,7 +163,27 @@ func (s *ItemService) CreateClaim(itemID, userID uint, description string) error
 		Status:      "pending",
 	}
 
-	return s.itemRepo.CreateClaim(claim)
+	if err := s.itemRepo.CreateClaim(claim); err != nil {
+		return err
+	}
+
+	// Notify admins of the incoming request so they don't miss approvals.
+	requestTypeLabel := "Claim Request"
+	if requestType == "found_match_request" {
+		requestTypeLabel = "Found Match Request"
+	}
+	_ = s.notifyAdmins(
+		"New Request Pending",
+		fmt.Sprintf(
+			"%s submitted for \"%s\".\n\nPost owner: %s (%s / %s)\nRequester: %s (%s / %s)\n\nPlease review in Admin > Claims.",
+			requestTypeLabel,
+			item.Title,
+			item.User.Name, item.User.StudentID, item.User.Phone,
+			claim.User.Name, claim.User.StudentID, claim.User.Phone,
+		),
+	)
+
+	return nil
 }
 
 func (s *ItemService) GetStats() (map[string]int64, error) {
@@ -190,23 +219,32 @@ func (s *ItemService) UpdateClaimStatus(claimID uint, status, remarks string) er
 			requestTypeLabel = "Found Match Request"
 		}
 
-		posterContact := fmt.Sprintf("%s (%s / %s)", claim.Item.User.Name, claim.Item.User.StudentID, claim.Item.User.Phone)
-		requesterContact := fmt.Sprintf("%s (%s / %s)", claim.User.Name, claim.User.StudentID, claim.User.Phone)
+		posterName := claim.Item.User.Name
+		posterID := claim.Item.User.StudentID
+		posterPhone := strings.TrimSpace(claim.Item.User.Phone)
+		requesterName := claim.User.Name
+		requesterID := claim.User.StudentID
+		requesterPhone := strings.TrimSpace(claim.User.Phone)
+
+		requesterBlock := fmt.Sprintf("Contact requester:\nName: %s (%s)\nPhone: %s", requesterName, requesterID, requesterPhone)
+		posterBlock := fmt.Sprintf("Contact post owner:\nName: %s (%s)\nPhone: %s", posterName, posterID, posterPhone)
+		selfBlockForRequester := fmt.Sprintf("Your details (shared):\nName: %s (%s)\nPhone: %s", requesterName, requesterID, requesterPhone)
+		selfBlockForPoster := fmt.Sprintf("Your details (shared):\nName: %s (%s)\nPhone: %s", posterName, posterID, posterPhone)
 
 		_ = s.itemRepo.CreateNotification(&model.Notification{
 			UserID: claim.UserID,
 			Title:  "Request Approved",
 			Message: fmt.Sprintf(
-				"Admin approved your %s for \"%s\". Contact post owner: %s.",
-				requestTypeLabel, claim.Item.Title, posterContact,
+				"Admin approved your %s for \"%s\".\n\n%s\n\n%s\n\nPlease meet in a safe, public spot on campus and confirm the item details together.",
+				requestTypeLabel, claim.Item.Title, posterBlock, selfBlockForRequester,
 			),
 		})
 		_ = s.itemRepo.CreateNotification(&model.Notification{
 			UserID: claim.Item.UserID,
 			Title:  "Request Approved On Your Post",
 			Message: fmt.Sprintf(
-				"Admin approved %s on your post \"%s\". Contact requester: %s.",
-				requestTypeLabel, claim.Item.Title, requesterContact,
+				"Admin approved %s on your post \"%s\".\n\n%s\n\n%s\n\nCoordinate handoff safely and mark the item resolved after exchange.",
+				requestTypeLabel, claim.Item.Title, requesterBlock, selfBlockForPoster,
 			),
 		})
 	} else {
@@ -218,7 +256,7 @@ func (s *ItemService) UpdateClaimStatus(claimID uint, status, remarks string) er
 			UserID: claim.UserID,
 			Title:  "Request Rejected",
 			Message: fmt.Sprintf(
-				"Admin rejected your request for \"%s\". Remarks: %s",
+				"Admin rejected your request for \"%s\".\n\nRemarks: %s",
 				claim.Item.Title, reason,
 			),
 		})
@@ -308,4 +346,19 @@ func (s *ItemService) CountUnreadNotifications(userID uint) int64 {
 		return 0
 	}
 	return count
+}
+
+func (s *ItemService) notifyAdmins(title, message string) error {
+	admins, err := s.itemRepo.FindAdmins()
+	if err != nil {
+		return err
+	}
+	for _, admin := range admins {
+		_ = s.itemRepo.CreateNotification(&model.Notification{
+			UserID: admin.ID,
+			Title:  title,
+			Message: message,
+		})
+	}
+	return nil
 }

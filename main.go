@@ -10,15 +10,23 @@ import (
 	"lostfound/internal/model"
 	"lostfound/pkg/database"
 	"lostfound/pkg/utils"
+	"net/http"
 	"os"
 	"strings"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	loadDotEnv(".env")
+	port := os.Getenv("PORT")
+	if port == "" { port = "8080" }
+	address := ":" + port
+
+	if strings.EqualFold(os.Getenv("GO_ENV"), "production") {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	database.InitDB()
 	database.DB.AutoMigrate(&model.User{}, &model.Item{}, &model.ItemImage{}, &model.Claim{}, &model.Notification{})
 	createDefaultAdmin()
@@ -26,29 +34,22 @@ func main() {
 	enforceUserConstraints()
 
 	r := gin.Default()
-	r.SetFuncMap(template.FuncMap{
+	funcMap := template.FuncMap{
 		"now": func() string {
-			return time.Now().Format("2006-01-02")
+		return time.Now().Format("2006-01-02")
 		},
-	})
+	}
 
-	r.LoadHTMLFiles(
-		"templates/layout.html",
-		"templates/index.html",
-		"templates/login.html",
-		"templates/register.html",
-		"templates/error.html",
-		"templates/dashboard.html",
-		"templates/report.html",
-		"templates/items.html",
-		"templates/item.html",
-		"templates/notifications.html",
-		"templates/admin/admin_dashboard.html",
-		"templates/admin/admin_claims.html",
-		"templates/admin/admin_items.html",
-	)
+	tmpl := template.New("").Funcs(funcMap)
 
-	r.Static("/static", "./static")
+	tmpl = template.Must(tmpl.ParseGlob("templates/*.html"))
+	tmpl = template.Must(tmpl.ParseGlob("templates/admin/*.html"))
+
+	r.SetHTMLTemplate(tmpl)
+
+
+
+	r.StaticFS("/static", http.Dir("static"))
 	r.Use(middleware.SetUser())
 	r.Use(middleware.CSRFMiddleware())
 
@@ -111,8 +112,10 @@ func main() {
 		admin.POST("/items/delete", adminHandler.DeleteItem)
 	}
 
-	log.Println("Server starting on http://localhost:8080")
-	r.Run(":8080")
+
+	log.Printf("Server starting on %s", address)
+	if err := r.Run(address); err != nil { log.Fatal(err) }
+
 }
 
 func loadDotEnv(path string) {
@@ -231,3 +234,4 @@ func enforceUserConstraints() {
 	database.DB.Exec("ALTER TABLE users ALTER COLUMN student_id SET NOT NULL")
 	database.DB.Exec("ALTER TABLE users ALTER COLUMN phone SET NOT NULL")
 }
+

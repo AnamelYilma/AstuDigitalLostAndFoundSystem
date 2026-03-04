@@ -287,19 +287,13 @@ func (h *ItemHandler) Search(c *gin.Context) {
 			selectedDateTo = dateTo
 		}
 	}
-	if status := c.Query("status"); status != "" {
+	// Default: only approved posts for everyone.
+	filters["approval_status"] = "approved"
+
+	// Admin can override via query param.
+	if status := c.Query("status"); status != "" && isAdmin {
 		if service.IsValidApprovalStatus(status) {
-			// Public explore only shows approved items.
-			if isAdmin {
-				filters["approval_status"] = status
-			} else if status == "approved" {
-				filters["approval_status"] = "approved"
-			}
-		}
-	}
-	if !isAdmin {
-		if _, ok := filters["approval_status"]; !ok {
-			filters["approval_status"] = "approved"
+			filters["approval_status"] = status
 		}
 	}
 
@@ -374,6 +368,9 @@ func (h *ItemHandler) ShowItem(c *gin.Context) {
 		"show_private":     showPrivateInfo,
 		"request_type":     requestTypeLabel,
 		"request_hint":     requestDescriptionHint,
+		"locations":        service.ASTULocations(),
+		"categories":       service.ItemCategories(),
+		"colors":           service.ColorOptions(),
 		"content_template": "item_content",
 	})
 }
@@ -383,7 +380,33 @@ func (h *ItemHandler) ClaimItem(c *gin.Context) {
 	u := user.(model.User)
 
 	itemID, _ := strconv.ParseUint(c.PostForm("item_id"), 10, 32)
-	description := c.PostForm("description")
+	description := strings.TrimSpace(c.PostForm("description"))
+
+	// Optional structured details to help admin match without exposing on cards.
+	claimLocation := strings.TrimSpace(c.PostForm("claim_location"))
+	claimCategory := strings.TrimSpace(c.PostForm("claim_category"))
+	claimColor := strings.TrimSpace(c.PostForm("claim_color"))
+	claimDate := strings.TrimSpace(c.PostForm("claim_date"))
+
+	parts := []string{}
+	if claimLocation != "" {
+		parts = append(parts, "Location: "+claimLocation)
+	}
+	if claimCategory != "" {
+		parts = append(parts, "Category: "+claimCategory)
+	}
+	if claimColor != "" {
+		parts = append(parts, "Color: "+claimColor)
+	}
+	if claimDate != "" {
+		parts = append(parts, "Date: "+claimDate)
+	}
+	if description != "" {
+		parts = append(parts, "Notes: "+description)
+	}
+	if len(parts) > 0 {
+		description = strings.Join(parts, " | ")
+	}
 
 	err := h.itemService.CreateClaim(uint(itemID), u.ID, description)
 	if err != nil {

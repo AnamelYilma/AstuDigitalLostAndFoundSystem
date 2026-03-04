@@ -2,31 +2,41 @@
 {{ template "layout.html" . }}
 
 {{ define "index_content" }}
-<section class="bg-gradient-to-r from-sky-500 via-indigo-500 to-slate-900 text-white rounded-2xl p-8 md:p-12 shadow-lg">
-  <div class="max-w-3xl space-y-4">
-    <p class="text-xs uppercase tracking-[0.2em] font-semibold text-slate-100/80">ASTU Digital Lost &amp; Found</p>
-    <h1 class="text-3xl md:text-4xl font-bold leading-tight">Report, find, and reconnect items across campus.</h1>
-    <p class="text-sm md:text-base text-slate-100/90">One place for lost and found items, approvals, and secure contact between students and admins.</p>
+<section class="bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-10 md:px-10 md:py-12">
+  <div class="max-w-4xl space-y-5">
+    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">ASTU Digital Lost &amp; Found</p>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-snug">
+      Reunite the ASTU community with lost and found items.
+    </h1>
+    <p class="text-base text-slate-600 md:text-lg leading-relaxed">
+      Report what you’ve lost or found, let admins verify, and connect securely with the right person when a match is approved.
+    </p>
     <div class="flex flex-wrap gap-3 pt-2">
-      <a href="/report" class="bg-white text-slate-900 px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Browse Reports</a>
-      <a href="/report/new?type=found" class="bg-slate-900/80 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900 transition">Report Found</a>
-      <a href="/report/new?type=lost" class="bg-slate-900/80 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900 transition">Report Lost</a>
+      <a href="/report/new?type=lost" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow hover:bg-slate-800 transition">
+        Report Lost
+      </a>
+      <a href="/report/new?type=found" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold shadow hover:bg-emerald-500 transition">
+        Report Found
+      </a>
+      <a href="/report" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200 transition">
+        Browse Reports
+      </a>
     </div>
   </div>
 </section>
 
-<section class="mt-8 grid md:grid-cols-3 gap-4">
+<section class="mt-10 grid md:grid-cols-3 gap-4">
   <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Report Lost Items</h3>
-    <p class="text-slate-600 text-sm mt-2">Submit details and optional photos to help others identify your belongings.</p>
+    <h3 class="text-lg font-semibold text-slate-900">Simple reporting</h3>
+    <p class="text-slate-600 text-sm mt-2">Lost or found? Submit details quickly with photos and campus location.</p>
   </div>
   <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Report Found Items</h3>
-    <p class="text-slate-600 text-sm mt-2">Log found items with location and time so owners can reach you via admin.</p>
+    <h3 class="text-lg font-semibold text-slate-900">Admin verification</h3>
+    <p class="text-slate-600 text-sm mt-2">Admins approve listings so only verified posts appear to everyone.</p>
   </div>
   <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Reports &amp; Requests</h3>
-    <p class="text-slate-600 text-sm mt-2">Filter all reports, then submit claim or found-match requests in one place.</p>
+    <h3 class="text-lg font-semibold text-slate-900">Safe connections</h3>
+    <p class="text-slate-600 text-sm mt-2">When a claim is approved, both sides get contact info to meet offline.</p>
   </div>
 </section>
 {{ end }}

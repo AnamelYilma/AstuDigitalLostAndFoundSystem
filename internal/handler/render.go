@@ -2,6 +2,7 @@ package handler
 
 import (
 	"lostfound/internal/model"
+	"lostfound/internal/service"
 	"lostfound/pkg/database"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,16 @@ func renderHTML(c *gin.Context, status int, name string, data gin.H) {
 				data["unread_count"] = unread
 			}
 		}
+	}
+	// Provide common option lists if a template forgets to set them.
+	if _, exists := data["locations"]; !exists {
+		data["locations"] = service.ASTULocations()
+	}
+	if _, exists := data["categories"]; !exists {
+		data["categories"] = service.ItemCategories()
+	}
+	if _, exists := data["colors"]; !exists {
+		data["colors"] = service.ColorOptions()
 	}
 	c.HTML(status, name, data)
 }

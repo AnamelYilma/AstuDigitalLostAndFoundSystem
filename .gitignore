@@ -1,9 +1,12 @@
-/folder create.bat
-/Plane and Description.md
-/static/uploads
-report to learn.md
 .env
-!.env.example
 tmp/
-air_build.log
-/docs
+air.log
+static/uploads/1772454983011963400.png
+static/uploads/1772471948365332000.jpg
+static/uploads/1772471948367642900.jpg
+static/uploads/1772472610515730800.jpg
+docs/Folder & file purpose.md
+FIle Structer.md
+internal/service/item_service.go
+project_snapshot.md
+internal/service/item_service.go

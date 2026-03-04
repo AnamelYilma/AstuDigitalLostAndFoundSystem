@@ -19,6 +19,10 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 	var items []model.Item
 	query := database.DB.Preload("User").Preload("Images")
 
+	if approvalStatus, ok := filters["approval_status"]; ok && approvalStatus != "" {
+		query = query.Where("approval_status = ?", approvalStatus)
+	}
+
 	if category, ok := filters["category"]; ok && category != "" {
 		query = query.Where("category = ?", category)
 	}
@@ -66,9 +70,6 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 	}
 	if dateTo, ok := filters["date_to"]; ok && dateTo != "" {
 		query = query.Where("\"date\" <= ?", dateTo)
-	}
-	if approvalStatus, ok := filters["approval_status"]; ok && approvalStatus != "" {
-		query = query.Where("approval_status = ?", approvalStatus)
 	}
 
 	err := query.Order("created_at DESC").Find(&items).Error
@@ -193,4 +194,10 @@ func (r *ItemRepository) CountUnreadNotifications(userID uint) (int64, error) {
 	var count int64
 	err := database.DB.Model(&model.Notification{}).Where("user_id = ? AND is_read = ?", userID, false).Count(&count).Error
 	return count, err
+}
+
+func (r *ItemRepository) FindAdmins() ([]model.User, error) {
+	var admins []model.User
+	err := database.DB.Where("role = ?", "admin").Find(&admins).Error
+	return admins, err
 }

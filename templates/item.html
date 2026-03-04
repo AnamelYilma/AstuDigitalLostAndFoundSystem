@@ -7,14 +7,27 @@
     <div class="p-6 bg-slate-50">
       {{ if or .item.Images .item.Image }}
         {{ if .item.Images }}
-          <img src="{{ (index .item.Images 0).Path }}" alt="{{ .item.Title }}" class="w-full h-80 object-cover rounded-xl shadow-sm">
+          {{ $count := len .item.Images }}
+          <div class="relative h-80 bg-white rounded-xl shadow-sm p-2 flex items-center justify-center cursor-pointer" data-item-gallery data-count="{{ $count }}">
+            {{ range $i, $img := .item.Images }}
+              <img src="{{ $img.Path }}" alt="{{ $.item.Title }}" class="item-frame max-h-full max-w-full object-contain {{ if eq $i 0 }}block{{ else }}hidden{{ end }}" data-idx="{{ $i }}">
+            {{ end }}
+            {{ if gt $count 1 }}
+              <button type="button" class="slider-nav slider-prev" aria-label="Previous image">&#10094;</button>
+              <button type="button" class="slider-nav slider-next" aria-label="Next image">&#10095;</button>
+            {{ end }}
+          </div>
           <div class="flex flex-wrap gap-2 mt-3">
-            {{ range .item.Images }}
-            <img src="{{ .Path }}" alt="item image" class="w-20 h-20 object-cover rounded-lg border border-slate-200">
+            {{ range $i, $img := .item.Images }}
+            <button type="button" class="rounded-lg border border-slate-200 hover:border-slate-400 transition" data-thumb-idx="{{ $i }}">
+              <img src="{{ $img.Path }}" alt="item image" class="w-20 h-20 object-contain bg-white rounded-md p-1">
+            </button>
             {{ end }}
           </div>
         {{ else }}
-          <img src="{{ .item.Image }}" alt="{{ .item.Title }}" class="w-full h-80 object-cover rounded-xl shadow-sm">
+          <div class="relative h-80 bg-white rounded-xl shadow-sm p-2 flex items-center justify-center cursor-pointer" data-item-gallery data-count="1">
+            <img src="{{ .item.Image }}" alt="{{ .item.Title }}" class="max-h-full max-w-full object-contain" data-idx="0">
+          </div>
         {{ end }}
       {{ else }}
         <div class="w-full h-80 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">No Image</div>
@@ -58,8 +71,37 @@
         <form method="POST" action="/claim" class="space-y-3">
           <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
           <input type="hidden" name="item_id" value="{{ .item.ID }}">
-          <label class="text-xs font-semibold text-slate-600">{{ .request_hint }}</label>
-          <textarea name="description" required rows="3" class="w-full rounded-lg border-slate-300 text-sm"></textarea>
+          <div class="grid md:grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Location (where you found/saw it)</label>
+              <select name="claim_location" class="w-full px-3 py-2 mt-1 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+                <option value="">Select location</option>
+                {{ range .locations }}<option value="{{ . }}">{{ . }}</option>{{ end }}
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Category</label>
+              <select name="claim_category" class="w-full px-3 py-2 mt-1 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+                <option value="">Select category</option>
+                {{ range .categories }}<option value="{{ . }}">{{ . }}</option>{{ end }}
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Color</label>
+              <select name="claim_color" class="w-full px-3 py-2 mt-1 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+                <option value="">Select color</option>
+                {{ range .colors }}<option value="{{ . }}">{{ . }}</option>{{ end }}
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-600">Date</label>
+              <input type="date" name="claim_date" max="{{ now }}" class="w-full px-3 py-2 mt-1 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600">{{ .request_hint }}</label>
+            <textarea name="description" rows="3" class="w-full px-3 py-2 mt-1 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent" placeholder="Add proof or extra details..."></textarea>
+          </div>
           <button type="submit" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:-translate-y-[1px] transition">Submit Request</button>
         </form>
       </div>
@@ -78,3 +120,78 @@
   </div>
 </div>
 {{ end }}
+
+<script>
+(() => {
+  const gallery = document.querySelector('[data-item-gallery]');
+  if (!gallery) return;
+
+  const frames = gallery.querySelectorAll('.item-frame, img[data-idx]');
+  const thumbs = document.querySelectorAll('[data-thumb-idx]');
+  const prev = gallery.querySelector('.slider-prev');
+  const next = gallery.querySelector('.slider-next');
+  const hasMulti = frames.length > 1;
+  let active = 0;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML = `
+    <div class="lightbox-content">
+      <button class="lightbox-close" aria-label="Close">&times;</button>
+      ${hasMulti ? '<button class="lightbox-nav lightbox-prev" aria-label="Previous">&#10094;</button>' : ''}
+      <img class="lightbox-image" src="" alt="Preview">
+      ${hasMulti ? '<button class="lightbox-nav lightbox-next" aria-label="Next">&#10095;</button>' : ''}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const lbImg = overlay.querySelector('.lightbox-image');
+  const lbClose = overlay.querySelector('.lightbox-close');
+  const lbPrev = overlay.querySelector('.lightbox-prev');
+  const lbNext = overlay.querySelector('.lightbox-next');
+
+  function setActive(idx) {
+    active = idx;
+    frames.forEach((f, i) => f.classList.toggle('hidden', i !== active));
+    thumbs.forEach((t, i) => t.classList.toggle('ring-2', i === active));
+  }
+
+  function openLightbox() {
+    lbImg.src = frames[active].getAttribute('src');
+    overlay.style.display = 'flex';
+  }
+  function closeLightbox() {
+    overlay.style.display = 'none';
+  }
+  function shift(delta) {
+    if (!hasMulti) return;
+    active = (active + delta + frames.length) % frames.length;
+    setActive(active);
+    lbImg.src = frames[active].getAttribute('src');
+  }
+
+  gallery.addEventListener('click', () => {
+    setActive(active);
+    openLightbox();
+  });
+  if (prev && next && hasMulti) {
+    prev.addEventListener('click', (e) => { e.stopPropagation(); shift(-1); });
+    next.addEventListener('click', (e) => { e.stopPropagation(); shift(1); });
+  }
+  thumbs.forEach((t, i) => {
+    t.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setActive(i);
+    });
+  });
+  lbClose.addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  if (lbPrev) lbPrev.addEventListener('click', (e) => { e.stopPropagation(); shift(-1); });
+  if (lbNext) lbNext.addEventListener('click', (e) => { e.stopPropagation(); shift(1); });
+  document.addEventListener('keydown', (e) => {
+    if (overlay.style.display !== 'flex') return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') shift(-1);
+    if (e.key === 'ArrowRight') shift(1);
+  });
+})();
+</script>
