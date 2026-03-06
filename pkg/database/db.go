@@ -33,14 +33,18 @@ func InitDB() {
 		)
 	}
 
-
 	// Log (safely hide password)
 	logDSN := hidePassword(dsn)
 	log.Printf("Connecting with: %s", logDSN)
 
 	var err error
+	logLevel := logger.Info
+	if strings.EqualFold(os.Getenv("GO_ENV"), "production") {
+		logLevel = logger.Warn
+	}
+
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logLevel),
 	})
 
 	if err != nil {
@@ -92,6 +96,15 @@ func fixRenderURL(url string) string {
 func hidePassword(dsn string) string {
 	if strings.Contains(dsn, "postgres://") {
 		return "postgres://****:****@" + strings.SplitN(dsn, "@", 2)[1]
+	}
+	if strings.Contains(strings.ToLower(dsn), "password=") {
+		parts := strings.Fields(dsn)
+		for i, p := range parts {
+			if strings.HasPrefix(strings.ToLower(p), "password=") {
+				parts[i] = "password=****"
+			}
+		}
+		return strings.Join(parts, " ")
 	}
 	return dsn
 }

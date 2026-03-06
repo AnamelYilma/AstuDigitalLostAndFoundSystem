@@ -52,7 +52,7 @@ func (r *ItemRepository) FindAll(filters map[string]interface{}) ([]model.Item, 
 			}
 		}
 	}
-	
+
 	if itemType, ok := filters["type"]; ok && itemType != "" {
 		query = query.Where("type = ?", itemType)
 	}
@@ -160,6 +160,10 @@ func (r *ItemRepository) FindAllItemsForAdmin() ([]model.Item, error) {
 
 func (r *ItemRepository) DeleteItem(itemID uint) error {
 	return database.DB.Delete(&model.Item{}, itemID).Error
+}
+
+func (r *ItemRepository) DeleteItemImages(itemID uint) error {
+	return database.DB.Where("item_id = ?", itemID).Delete(&model.ItemImage{}).Error
 }
 
 func (r *ItemRepository) CreateItemImages(itemID uint, paths []string) error {

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
 	"lostfound/internal/handler"
@@ -15,13 +16,14 @@ import (
 	"os"
 	"strings"
 	"time"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	loadDotEnv(".env")
 	port := os.Getenv("PORT")
-	if port == "" { port = "8080" }
+	if port == "" {
+		port = "8080"
+	}
 	address := ":" + port
 
 	if strings.EqualFold(os.Getenv("GO_ENV"), "production") {
@@ -37,7 +39,7 @@ func main() {
 	r := gin.Default()
 	funcMap := template.FuncMap{
 		"now": func() string {
-		return time.Now().Format("2006-01-02")
+			return time.Now().Format("2006-01-02")
 		},
 	}
 
@@ -47,8 +49,6 @@ func main() {
 	tmpl = template.Must(tmpl.ParseGlob("templates/admin/*.html"))
 
 	r.SetHTMLTemplate(tmpl)
-
-
 
 	r.StaticFS("/static", http.Dir("static"))
 	r.Use(middleware.SetUser())
@@ -89,7 +89,7 @@ func main() {
 	r.POST("/login", authHandler.Login)
 	r.GET("/register", authHandler.ShowRegister)
 	r.POST("/register", authHandler.Register)
-	r.GET("/logout", authHandler.Logout)
+	r.POST("/logout", authHandler.Logout)
 
 	r.GET("/report", itemHandler.Search)
 	r.GET("/items", func(c *gin.Context) { c.Redirect(303, "/report") })
@@ -119,9 +119,10 @@ func main() {
 		admin.POST("/items/delete", adminHandler.DeleteItem)
 	}
 
-
 	log.Printf("Server starting on %s", address)
-	if err := r.Run(address); err != nil { log.Fatal(err) }
+	if err := r.Run(address); err != nil {
+		log.Fatal(err)
+	}
 
 }
 
@@ -241,4 +242,3 @@ func enforceUserConstraints() {
 	database.DB.Exec("ALTER TABLE users ALTER COLUMN student_id SET NOT NULL")
 	database.DB.Exec("ALTER TABLE users ALTER COLUMN phone SET NOT NULL")
 }
-

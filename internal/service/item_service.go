@@ -11,7 +11,10 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/gabriel-vasile/mimetype"
 )
+
 type ItemService struct {
 	itemRepo *repository.ItemRepository
 }
@@ -46,6 +49,17 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 	defer src.Close()
+
+	// Validate actual MIME type
+	head := make([]byte, 512)
+	n, _ := src.Read(head)
+	mime := mimetype.Detect(head[:n])
+	if !(mime.Is("image/jpeg") || mime.Is("image/png")) {
+		return "", errors.New("invalid image type")
+	}
+	if seeker, ok := src.(io.Seeker); ok {
+		_, _ = seeker.Seek(0, io.SeekStart)
+	}
 
 	// Create destination file
 	dst, err := os.Create(filePath)
@@ -321,6 +335,20 @@ func (s *ItemService) UpdateItemApproval(itemID uint, status, remarks string) er
 }
 
 func (s *ItemService) DeleteItem(itemID uint) error {
+	item, err := s.itemRepo.FindByID(itemID)
+	if err != nil {
+		return err
+	}
+
+	seen := map[string]bool{}
+	for _, img := range item.Images {
+		_ = deleteUploadedFile(img.Path, seen)
+	}
+	if item.Image != "" {
+		_ = deleteUploadedFile(item.Image, seen)
+	}
+
+	_ = s.itemRepo.DeleteItemImages(itemID)
 	return s.itemRepo.DeleteItem(itemID)
 }
 
@@ -355,10 +383,23 @@ func (s *ItemService) notifyAdmins(title, message string) error {
 	}
 	for _, admin := range admins {
 		_ = s.itemRepo.CreateNotification(&model.Notification{
-			UserID: admin.ID,
-			Title:  title,
+			UserID:  admin.ID,
+			Title:   title,
 			Message: message,
 		})
 	}
 	return nil
+}
+
+func deleteUploadedFile(path string, seen map[string]bool) error {
+	clean := strings.TrimPrefix(path, "/")
+	clean = filepath.Clean(clean)
+	if !strings.HasPrefix(clean, "static/uploads") {
+		return nil
+	}
+	if seen[clean] {
+		return nil
+	}
+	seen[clean] = true
+	return os.Remove(clean)
 }

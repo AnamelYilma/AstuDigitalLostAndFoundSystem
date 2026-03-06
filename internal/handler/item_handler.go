@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"lostfound/internal/model"
 	"net/http"
 	"strconv"
@@ -15,6 +16,8 @@ import (
 type ItemHandler struct {
 	itemService *service.ItemService
 }
+
+const maxUploadFiles = 5
 
 func NewItemHandler() *ItemHandler {
 	return &ItemHandler{
@@ -134,6 +137,19 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 	form, _ := c.MultipartForm()
 	if form != nil {
 		files := form.File["images"]
+		if len(files) > maxUploadFiles {
+			renderHTML(c, http.StatusOK, "report.html", gin.H{
+				"title":            "Report Item",
+				"user":             u,
+				"type":             itemType,
+				"error":            fmt.Sprintf("You can upload up to %d images", maxUploadFiles),
+				"locations":        locations,
+				"colors":           colors,
+				"categories":       categories,
+				"content_template": "report_content",
+			})
+			return
+		}
 		for _, file := range files {
 			path, saveErr := h.itemService.SaveImage(file)
 			if saveErr != nil {
@@ -155,6 +171,19 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 	if len(imagePaths) == 0 {
 		// Backward compatibility for single-image field name
 		if file, err := c.FormFile("image"); err == nil {
+			if len(imagePaths) >= maxUploadFiles {
+				renderHTML(c, http.StatusOK, "report.html", gin.H{
+					"title":            "Report Item",
+					"user":             u,
+					"type":             itemType,
+					"error":            fmt.Sprintf("You can upload up to %d images", maxUploadFiles),
+					"locations":        locations,
+					"colors":           colors,
+					"categories":       categories,
+					"content_template": "report_content",
+				})
+				return
+			}
 			path, saveErr := h.itemService.SaveImage(file)
 			if saveErr != nil {
 				renderHTML(c, http.StatusOK, "report.html", gin.H{
