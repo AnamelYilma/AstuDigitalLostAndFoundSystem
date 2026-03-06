@@ -2,41 +2,217 @@
 {{ template "layout.html" . }}
 
 {{ define "index_content" }}
-<section class="bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-10 md:px-10 md:py-12">
-  <div class="max-w-4xl space-y-5">
-    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">ASTU Digital Lost &amp; Found</p>
-    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-snug">
-      Reunite the ASTU community with lost and found items.
-    </h1>
-    <p class="text-base text-slate-600 md:text-lg leading-relaxed">
-      Report what you’ve lost or found, let admins verify, and connect securely with the right person when a match is approved.
-    </p>
-    <div class="flex flex-wrap gap-3 pt-2">
-      <a href="/report/new?type=lost" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow hover:bg-slate-800 transition">
-        Report Lost
-      </a>
-      <a href="/report/new?type=found" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold shadow hover:bg-emerald-500 transition">
-        Report Found
-      </a>
-      <a href="/report" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200 transition">
-        Browse Reports
-      </a>
+<!-- Section 1: Hero -->
+<section class="guest-section guest-hero vh-100 flex items-center relative overflow-hidden">
+  <div class="guest-blob blob-one"></div>
+  <div class="guest-blob blob-two"></div>
+  <div class="guest-blob blob-three"></div>
+  <div class="w-full max-w-6xl mx-auto px-6 md:px-10 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+    <div class="space-y-6">
+      <p class="text-xs md:text-sm font-semibold tracking-[0.22em] uppercase text-slate-100/80">ASTU Digital Lost &amp; Found</p>
+      <h1 class="text-4xl md:text-5xl font-bold leading-tight text-white">Find it fast. Return it faster.</h1>
+      <p class="text-lg text-slate-100/80 max-w-xl">Report lost items, browse found reports, and reconnect belongings across campus with guided steps and instant updates.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/register" class="btn-hero-primary">Let's Start</a>
+        <a href="/report" class="btn-hero-secondary">Browse Items</a>
+      </div>
+      <div class="flex flex-wrap gap-3 text-sm text-slate-100/70">
+        <span class="pill">Secure matching</span>
+        <span class="pill">Admin verified</span>
+        <span class="pill">24/7 reporting</span>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="hero-card glass-panel shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="badge-soft bg-emerald-500/20 text-emerald-200">Found</span>
+          <span class="badge-soft bg-amber-500/20 text-amber-200">Lost</span>
+          <span class="ml-auto text-xs text-slate-200/60">Live feed</span>
+        </div>
+        <div class="stack">
+          <div class="stack-card">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-slate-200/70">Category</p>
+                <p class="font-semibold text-white">Electronics</p>
+              </div>
+              <span class="tag tag-found">Found</span>
+            </div>
+            <p class="text-sm text-slate-100/80 mt-2">Black backpack near Library with silver laptop and ID.</p>
+            <div class="mt-3 text-xs text-slate-200/60">Updated 5 min ago</div>
+          </div>
+          <div class="stack-card offset">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-slate-200/70">Category</p>
+                <p class="font-semibold text-white">Accessories</p>
+              </div>
+              <span class="tag tag-lost">Lost</span>
+            </div>
+            <p class="text-sm text-slate-100/80 mt-2">Blue wallet with student ID around Cafeteria.</p>
+            <div class="mt-3 text-xs text-slate-200/60">Updated 12 min ago</div>
+          </div>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-3 text-center">
+          <div class="mini-stat">
+            <div class="mini-number" data-target="1240">0</div>
+            <p class="mini-label">Registered Users</p>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-number" data-target="328">0</div>
+            <p class="mini-label">Items Found</p>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-number" data-target="412">0</div>
+            <p class="mini-label">Items Lost</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="mt-10 grid md:grid-cols-3 gap-4">
-  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Simple reporting</h3>
-    <p class="text-slate-600 text-sm mt-2">Lost or found? Submit details quickly with photos and campus location.</p>
-  </div>
-  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Admin verification</h3>
-    <p class="text-slate-600 text-sm mt-2">Admins approve listings so only verified posts appear to everyone.</p>
-  </div>
-  <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-    <h3 class="text-lg font-semibold text-slate-900">Safe connections</h3>
-    <p class="text-slate-600 text-sm mt-2">When a claim is approved, both sides get contact info to meet offline.</p>
+<!-- Section 2: Snapshot -->
+<section class="guest-section guest-snapshot vh-100 relative overflow-hidden text-white">
+  <div class="guest-blob blob-four"></div>
+  <div class="w-full max-w-6xl mx-auto px-6 md:px-10 py-16 flex flex-col gap-10 relative z-10">
+    <div class="flex flex-col md:flex-row md:items-center gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-slate-200/70">Live Snapshot</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Campus signals at a glance</h2>
+        <p class="text-slate-200/80 mt-2">Track activity and jump in where it matters.</p>
+      </div>
+      <div class="flex gap-2 md:ml-auto">
+        <button class="filter-pill active">Today</button>
+        <button class="filter-pill">Week</button>
+        <button class="filter-pill">All</button>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="stat-card">
+        <div class="stat-top">
+          <p class="stat-label">Registered users</p>
+          <span class="trend up">+12%</span>
+        </div>
+        <div class="stat-number" data-target="1240">0</div>
+        <p class="stat-sub">New enrollments today</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <p class="stat-label">Items found</p>
+          <span class="trend up">+6%</span>
+        </div>
+        <div class="stat-number" data-target="28">0</div>
+        <p class="stat-sub">Awaiting pickup</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <p class="stat-label">Items reported lost</p>
+          <span class="trend down">-3%</span>
+        </div>
+        <div class="stat-number" data-target="41">0</div>
+        <p class="stat-sub">Open cases</p>
+      </div>
+    </div>
+
+    <div class="info-bar">
+      <span class="dot live"></span>
+      <p class="text-sm">We're monitoring reports 24/7. Need help? <a href="/login" class="underline font-semibold">Login</a> or <a href="/report" class="underline font-semibold">view reports</a>.</p>
+    </div>
   </div>
 </section>
+
+<!-- Section 3: About & Quick Links -->
+<section class="guest-section guest-about vh-100 bg-slate-50 text-slate-900">
+  <div class="w-full max-w-6xl mx-auto px-6 md:px-10 py-16 grid md:grid-cols-2 gap-10 items-center">
+    <div class="space-y-5">
+      <p class="text-xs uppercase tracking-[0.18em] text-slate-500">About the platform</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">How we keep items moving back to their owners</h2>
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="step-bullet">1</div>
+          <div>
+            <p class="step-title">Report</p>
+            <p class="step-desc">Log lost or found details with photos and location hints.</p>
+          </div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-bullet">2</div>
+          <div>
+            <p class="step-title">Match</p>
+            <p class="step-desc">Admins verify and alert potential matches instantly.</p>
+          </div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-bullet">3</div>
+          <div>
+            <p class="step-title">Return</p>
+            <p class="step-desc">Arrange secure pickup with campus guidance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-4">
+      <div class="link-card">
+        <div>
+          <p class="link-title">Login</p>
+          <p class="link-desc">Access your dashboard, notifications, and claims.</p>
+        </div>
+        <a href="/login" class="link-button">Open</a>
+      </div>
+      <div class="link-card">
+        <div>
+          <p class="link-title">View Reports</p>
+          <p class="link-desc">Browse approved lost and found listings across campus.</p>
+        </div>
+        <a href="/report" class="link-button">Browse</a>
+      </div>
+      <div class="link-card">
+        <div>
+          <p class="link-title">Report an Item</p>
+          <p class="link-desc">Submit a new lost or found report with photos.</p>
+        </div>
+        <a href="/report/new?type=lost" class="link-button">Start</a>
+      </div>
+      <div class="link-card">
+        <div>
+          <p class="link-title">Help Desk</p>
+          <p class="link-desc">Need assistance? Our team is ready to guide you.</p>
+        </div>
+        <a href="/register" class="link-button">Contact</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  const animateNumber = (el) => {
+    const target = Number(el.dataset.target || 0);
+    const duration = 900;
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const value = Math.floor(ease(progress) * target);
+      el.textContent = value.toLocaleString();
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const numbers = document.querySelectorAll('.stat-number, .mini-number');
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateNumber(entry.target);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  numbers.forEach(n => observer.observe(n));
+})();
+</script>
 {{ end }}

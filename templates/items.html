@@ -3,41 +3,46 @@
 
 {{ define "items_content" }}
 <div class="space-y-6">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div>
-      <h2 class="text-3xl font-bold text-slate-900">Find Your Items</h2>
-      <p class="mt-2 text-slate-600">Browse all reported lost and found items</p>
+  <div class="panel-hero gradient-hero">
+    <div class="space-y-3">
+      <p class="text-xs uppercase tracking-[0.18em] text-slate-100/80">Report view</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-white">Find your items faster</h2>
+      <p class="text-slate-100/80 text-sm md:text-base">Browse approved lost and found posts. Use filters to narrow by type, location, color, and date.</p>
+      {{ if .user }}
+      <div class="flex flex-wrap gap-3 pt-2">
+        <a href="/report/new?type=lost" class="btn-solid">Report Lost</a>
+        <a href="/report/new?type=found" class="btn-ghost">Report Found</a>
+      </div>
+      {{ end }}
     </div>
-    {{ if .user }}
-    <div class="flex flex-wrap gap-3">
-      <a href="/report/new?type=lost" class="flex-1 min-w-[140px] px-4 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-xl text-center font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">Report Lost</a>
-      <a href="/report/new?type=found" class="flex-1 min-w-[140px] px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl text-center font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">Report Found</a>
+    <div class="hero-mini-card">
+      <p class="text-xs text-slate-100/80 uppercase tracking-[0.12em]">Quick tips</p>
+      <ul class="space-y-2 text-sm text-slate-100/80">
+        <li>- Filters stack - start with type, then location.</li>
+        <li>- Found items hide location until approved.</li>
+        <li>- Click an item to open its gallery.</li>
+      </ul>
     </div>
-    {{ end }}
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="p-5 border-b border-slate-200">
-      <button id="filter-toggle" type="button" class="w-full flex items-center justify-between">
-        <span class="font-semibold text-slate-800">Filters</span>
-        <svg class="h-5 w-5 text-slate-500 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+  <div class="panel">
+    <div class="panel-head">
+      <h3 class="panel-title">Filters</h3>
+      <button id="filter-toggle" type="button" class="btn-muted text-sm px-3 py-1.5">Show/Hide</button>
     </div>
     <div id="filter-panel" class="p-5">
-      <form method="GET" action="/report" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <form method="GET" action="/report" class="form-grid five">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Type</label>
-          <select name="type" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+          <label class="label-strong">Type</label>
+          <select name="type" class="input-modern">
             <option value="">All Types</option>
             <option value="lost" {{ if eq .selected_type "lost" }}selected{{ end }}>Lost</option>
             <option value="found" {{ if eq .selected_type "found" }}selected{{ end }}>Found</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Category</label>
-          <select name="category" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+          <label class="label-strong">Category</label>
+          <select name="category" class="input-modern">
             <option value="">All Categories</option>
             {{ range .categories }}
             <option value="{{ . }}" {{ if eq $.selected_category . }}selected{{ end }}>{{ . }}</option>
@@ -45,8 +50,8 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Location</label>
-          <select name="location" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+          <label class="label-strong">Location</label>
+          <select name="location" class="input-modern">
             <option value="">All Locations</option>
             {{ range .locations }}
             <option value="{{ . }}" {{ if eq $.selected_location . }}selected{{ end }}>{{ . }}</option>
@@ -54,8 +59,8 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Color</label>
-          <select name="color" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+          <label class="label-strong">Color</label>
+          <select name="color" class="input-modern">
             <option value="">All Colors</option>
             {{ range .colors }}
             <option value="{{ . }}" {{ if eq $.selected_color . }}selected{{ end }}>{{ . }}</option>
@@ -63,17 +68,12 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wide">Date</label>
-          <input type="date" name="date_from" value="{{ .selected_date_from }}" max="{{ now }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+          <label class="label-strong">Date</label>
+          <input type="date" name="date_from" value="{{ .selected_date_from }}" max="{{ now }}" class="input-modern">
         </div>
-        <div class="md:col-span-2 lg:col-span-5 flex gap-3 pt-2">
-          <button type="submit" class="px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition flex items-center">
-            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            Apply Filters
-          </button>
-          <a href="/report" class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition flex items-center">Clear All</a>
+        <div class="form-actions">
+          <button type="submit" class="btn-brand w-full">Apply Filters</button>
+          <a href="/report" class="btn-muted w-full text-center">Clear All</a>
         </div>
       </form>
     </div>
@@ -82,11 +82,11 @@
   {{ if .items }}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {{ range .items }}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-      <div class="relative block bg-slate-50">
+    <div class="card-modern">
+      <div class="relative block bg-slate-50 rounded-lg overflow-hidden">
         {{ if .Images }}
           {{ $count := len .Images }}
-          <div class="relative h-52 bg-slate-50 rounded-md overflow-hidden group cursor-pointer" data-gallery data-count="{{ $count }}">
+          <div class="relative h-52 bg-slate-50 overflow-hidden group cursor-pointer" data-gallery data-count="{{ $count }}">
             {{ range $i, $img := .Images }}
               <img src="{{ $img.Path }}" alt="{{ $.Title }}" class="slider-frame w-full h-full object-contain p-2 {{ if eq $i 0 }}block{{ else }}hidden{{ end }}" data-idx="{{ $i }}">
             {{ end }}
@@ -97,7 +97,7 @@
             {{ end }}
           </div>
         {{ else if .Image }}
-          <div class="relative h-52 bg-slate-50 rounded-md overflow-hidden cursor-pointer" data-gallery data-count="1">
+          <div class="relative h-52 bg-slate-50 overflow-hidden cursor-pointer" data-gallery data-count="1">
             <img src="{{ .Image }}" alt="{{ .Title }}" class="w-full h-full object-contain p-2" data-idx="0">
           </div>
         {{ else }}
@@ -108,22 +108,20 @@
           </div>
         {{ end }}
         <div class="absolute top-3 right-3">
-          <span class="px-3 py-1 rounded-full text-xs font-semibold {{ if eq .Type "lost" }}bg-rose-100 text-rose-800{{ else }}bg-emerald-100 text-emerald-800{{ end }}">
+          <span class="badge-type {{ if eq .Type "lost" }}badge-lost{{ else }}badge-found{{ end }}">
             {{ if eq .Type "lost" }}Lost{{ else }}Found{{ end }}
           </span>
         </div>
       </div>
-      <div class="p-5">
-        <h3 class="text-lg font-bold text-slate-900 mb-2">{{ .Title }}</h3>
+      <div class="p-5 space-y-3">
+        <h3 class="text-lg font-bold text-slate-900">{{ .Title }}</h3>
         <div class="space-y-2 text-sm text-slate-600">
-          <div class="flex items-center">
-            <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-            </svg>
-            <span>{{ .Category }}</span>
+          <div class="flex items-center gap-2">
+            <span class="chip">{{ .Category }}</span>
+            {{ if .Color }}<span class="chip neutral">{{ .Color }}</span>{{ end }}
           </div>
-          <div class="flex items-center">
-            <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex items-center gap-2 text-slate-700">
+            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -135,22 +133,20 @@
               {{ end }}
             </span>
           </div>
-          <div class="flex items-center">
-            <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex items-center gap-2 text-slate-700">
+            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span>{{ .Date }}</span>
           </div>
         </div>
-        <div class="mt-4">
-          <a href="/item/{{ .ID }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition">View Details</a>
-        </div>
+        <a href="/item/{{ .ID }}" class="btn-brand w-full text-center">View Details</a>
       </div>
     </div>
     {{ end }}
   </div>
   {{ else }}
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
+  <div class="panel p-12 text-center text-slate-600">
     <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
@@ -164,12 +160,11 @@
 (() => {
   const toggle = document.getElementById('filter-toggle');
   const panel = document.getElementById('filter-panel');
-  const icon = toggle ? toggle.querySelector('svg') : null;
-  if (!toggle || !panel) return;
-  toggle.addEventListener('click', () => {
-    const hidden = panel.classList.toggle('hidden');
-    if (icon) icon.style.transform = hidden ? 'rotate(0deg)' : 'rotate(180deg)';
-  });
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => {
+      panel.classList.toggle('hidden');
+    });
+  }
 })();
 
 // Lightweight slider + lightbox for item cards
@@ -177,7 +172,6 @@
   const galleries = document.querySelectorAll('[data-gallery]');
   if (!galleries.length) return;
 
-  // Build lightbox once
   const overlay = document.createElement('div');
   overlay.className = 'lightbox-overlay';
   overlay.innerHTML = `
@@ -239,7 +233,6 @@
       }
     }
 
-    // dots
     if (dotsHost && hasMulti) {
       dotsHost.innerHTML = '';
       frames.forEach((_, idx) => {
@@ -266,3 +259,4 @@
 })();
 </script>
 {{ end }}
+

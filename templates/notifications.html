@@ -1,28 +1,44 @@
 {{ template "layout.html" . }}
 
 {{ define "notifications_content" }}
-<div class="space-y-4">
+<div class="space-y-6">
+  <div class="panel-hero gradient-hero">
+    <div class="space-y-2">
+      <p class="text-xs uppercase tracking-[0.18em] text-slate-100/80">Notifications</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-white">Stay on top of matches</h2>
+      <p class="text-slate-100/80 text-sm md:text-base">Messages arrive in full blocks; copy contact numbers instantly.</p>
+    </div>
+    <div class="hero-mini-card">
+      <p class="text-xs text-slate-100/80 uppercase tracking-[0.12em] mb-2">Shortcuts</p>
+      <ul class="space-y-1 text-sm text-slate-100/80">
+        <li>- Copy phone numbers with one tap.</li>
+        <li>- New messages are highlighted.</li>
+        <li>- Mark all as read when you are done.</li>
+      </ul>
+    </div>
+  </div>
+
   <div class="flex items-center justify-between flex-wrap gap-3">
     <div>
-      <h2 class="text-2xl font-bold text-slate-900">My Notifications</h2>
-      <p class="text-slate-600 text-sm">Messages are shown in full blocks; copy contact numbers with one click.</p>
+      <h3 class="text-lg font-semibold text-slate-900">My Notifications</h3>
+      <p class="text-slate-600 text-sm">Messages grouped and ready to copy.</p>
     </div>
     <form method="POST" action="/notifications/read" class="shrink-0">
       <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
-      <button type="submit" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition">Mark All Read</button>
+      <button type="submit" class="btn-brand">Mark All Read</button>
     </form>
   </div>
 
   {{ if .notifications }}
     <div class="space-y-3">
       {{ range .notifications }}
-      <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 {{ if not .IsRead }}ring-2 ring-amber-200{{ end }}" data-notif-card>
+      <div class="notif-card panel {{ if not .IsRead }}notif-unread{{ end }}" data-notif-card>
         <div class="flex flex-wrap items-start gap-2">
           <div class="flex-1">
             <p class="text-xs text-slate-500">{{ .CreatedAt.Format "Jan 02, 2006 15:04" }}</p>
             <h3 class="text-base font-semibold text-slate-900">{{ .Title }}</h3>
           </div>
-          <span class="px-3 py-1 rounded-full text-xs font-semibold {{ if .IsRead }}bg-emerald-100 text-emerald-800{{ else }}bg-amber-100 text-amber-800{{ end }}">
+          <span class="badge-type {{ if .IsRead }}badge-found{{ else }}badge-lost{{ end }}">
             {{ if .IsRead }}read{{ else }}new{{ end }}
           </span>
         </div>
@@ -35,7 +51,7 @@
       {{ end }}
     </div>
   {{ else }}
-    <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-600">No notifications yet.</div>
+    <div class="panel p-8 text-center text-slate-600">No notifications yet.</div>
   {{ end }}
 </div>
 
@@ -68,7 +84,7 @@
       const firstName = name.split(' ')[0] || name;
       btn.type = 'button';
       btn.textContent = `Copy ${firstName}'s phone`;
-      btn.className = 'px-3 py-1.5 rounded-md bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition';
+      btn.className = 'btn-muted text-xs px-3 py-2';
       btn.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(phone);
@@ -132,3 +148,4 @@
 })();
 </script>
 {{ end }}
+

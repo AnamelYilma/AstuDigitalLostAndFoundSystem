@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ if .title }}{{ .title }} - ASTU Lost & Found{{ else }}ASTU Lost & Found{{ end }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" href="/static/img/logo.jpg.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/static/css/style.css">
@@ -84,10 +87,13 @@
     })();
     </script>
 
+    {{ if eq .content_template "index_content" }}
+    <main class="landing w-full min-h-screen overflow-x-hidden">
+        {{ template "index_content" . }}
+    </main>
+    {{ else }}
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {{ if eq .content_template "index_content" }}
-            {{ template "index_content" . }}
-        {{ else if eq .content_template "login_content" }}
+        {{ if eq .content_template "login_content" }}
             {{ template "login_content" . }}
         {{ else if eq .content_template "register_content" }}
             {{ template "register_content" . }}
@@ -111,6 +117,7 @@
             {{ template "error_content" . }}
         {{ end }}
     </main>
+    {{ end }}
 
     <footer class="w-full bg-slate-900 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm">

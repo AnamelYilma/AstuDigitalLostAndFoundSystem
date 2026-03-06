@@ -2,69 +2,110 @@
 {{ template "layout.html" . }}
 
 {{ define "dashboard_content" }}
-<div class="space-y-6">
-  <div>
-    <p class="text-sm text-slate-500">Welcome back</p>
-    <h2 class="text-2xl font-bold text-slate-900">Hello, {{ .user.Name }}</h2>
+<div class="space-y-7">
+  <div class="panel-hero gradient-hero">
+    <div>
+      <p class="text-sm text-slate-100/80">Welcome back</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-white">Hello, {{ .user.Name }}</h2>
+      <p class="text-slate-100/80 mt-2 text-sm md:text-base">Track your lost &amp; found activity and act quickly with the shortcuts below.</p>
+      <div class="flex flex-wrap gap-3 mt-4">
+        <a href="/report/new?type=lost" class="btn-solid">Report Lost</a>
+        <a href="/report/new?type=found" class="btn-ghost">Report Found</a>
+        <a href="/report" class="btn-soft">Report View</a>
+        <a href="/notifications" class="btn-soft">
+          Notifications{{ if gt .unread_count 0 }} <span class="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[11px]">{{ .unread_count }}</span>{{ end }}
+        </a>
+      </div>
+    </div>
+    <div class="hero-mini-card">
+      <p class="text-xs text-slate-100/80 uppercase tracking-[0.12em]">Your activity</p>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.total_lost }}">{{ .stats.total_lost }}</div>
+          <p class="mini-label">Lost</p>
+        </div>
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.total_found }}">{{ .stats.total_found }}</div>
+          <p class="mini-label">Found</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-2">
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.total_claims }}">{{ .stats.total_claims }}</div>
+          <p class="mini-label">Claims</p>
+        </div>
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.pending_claims }}">{{ .stats.pending_claims }}</div>
+          <p class="mini-label">Pending</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <p class="text-xs uppercase tracking-wide text-slate-500">Lost</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_lost }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Lost</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_lost }}</div>
+      <p class="stat-tile__hint">Items you reported lost</p>
     </div>
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <p class="text-xs uppercase tracking-wide text-slate-500">Found</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_found }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Found</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_found }}</div>
+      <p class="stat-tile__hint">Items you reported found</p>
     </div>
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <p class="text-xs uppercase tracking-wide text-slate-500">Claims</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_claims }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Claims</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_claims }}</div>
+      <p class="stat-tile__hint">Claims you submitted</p>
     </div>
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <p class="text-xs uppercase tracking-wide text-slate-500">Pending Claims</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.pending_claims }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Pending Claims</p>
+        <span class="trend down">wait</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.pending_claims }}</div>
+      <p class="stat-tile__hint">Awaiting admin review</p>
     </div>
   </div>
 
-  <div class="flex flex-wrap gap-3">
-    <a href="/report/new?type=lost" class="bg-sky-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Report Lost</a>
-    <a href="/report/new?type=found" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:-translate-y-[1px] transition">Report Found</a>
-    <a href="/report" class="bg-white text-slate-900 border border-slate-200 px-4 py-2 rounded-lg font-semibold shadow-sm hover:-translate-y-[1px] transition">Report View</a>
-    <a href="/notifications" class="bg-white text-slate-900 border border-slate-200 px-4 py-2 rounded-lg font-semibold shadow-sm hover:-translate-y-[1px] transition">
-      Notifications{{ if gt .unread_count 0 }} <span class="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[11px]">{{ .unread_count }}</span>{{ end }}
-    </a>
-  </div>
-
-  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-slate-900">My Reported Items</h3>
+  <div class="panel table-panel">
+    <div class="panel-head">
+      <h3 class="panel-title">My Reported Items</h3>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 text-slate-600">
+      <table class="table-modern">
+        <thead>
           <tr>
-            <th class="px-4 py-3 text-left font-semibold">Title</th>
-            <th class="px-4 py-3 text-left font-semibold">Type</th>
-            <th class="px-4 py-3 text-left font-semibold">Location</th>
-            <th class="px-4 py-3 text-left font-semibold">Approval</th>
-            <th class="px-4 py-3 text-left font-semibold">Claim Status</th>
-            <th class="px-4 py-3 text-left font-semibold">Admin Remark</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Approval</th>
+            <th>Claim Status</th>
+            <th>Admin Remark</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           {{ range .my_items }}
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-3">{{ .Title }}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .Type }}</span></td>
-            <td class="px-4 py-3">{{ .Location }}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .ApprovalStatus }}</span></td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .Status }}</span></td>
-            <td class="px-4 py-3 text-slate-600">{{ if .AdminRemarks }}{{ .AdminRemarks }}{{ else }}-{{ end }}</td>
+          <tr>
+            <td>{{ .Title }}</td>
+            <td><span class="chip">{{ .Type }}</span></td>
+            <td>{{ .Location }}</td>
+            <td><span class="chip neutral">{{ .ApprovalStatus }}</span></td>
+            <td><span class="chip neutral">{{ .Status }}</span></td>
+            <td class="text-slate-600">{{ if .AdminRemarks }}{{ .AdminRemarks }}{{ else }}-{{ end }}</td>
           </tr>
           {{ else }}
           <tr>
-            <td class="px-4 py-6 text-center text-slate-500" colspan="6">No items reported yet.</td>
+            <td class="text-center text-slate-500" colspan="6">No items reported yet.</td>
           </tr>
           {{ end }}
         </tbody>

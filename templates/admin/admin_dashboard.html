@@ -2,71 +2,121 @@
 {{ template "layout.html" . }}
 
 {{ define "admin_dashboard_content" }}
-<div class="space-y-6">
-  <div>
-    <p class="text-sm text-slate-500">Admin overview</p>
-    <h2 class="text-2xl font-bold text-slate-900">Admin Dashboard</h2>
+<div class="space-y-7">
+  <div class="panel-hero gradient-hero admin">
+    <div>
+      <p class="text-sm text-slate-100/80">Admin overview</p>
+      <h2 class="text-3xl md:text-4xl font-bold text-white">Admin Dashboard</h2>
+      <p class="text-slate-100/80 mt-2 text-sm md:text-base">Monitor campus activity, approve posts, and close the loop faster.</p>
+      <div class="flex flex-wrap gap-3 mt-4">
+        <a href="/admin/claims" class="btn-solid">Manage Claims</a>
+        <a href="/admin/items" class="btn-ghost">Manage Posts</a>
+        <a href="/report/new?type=lost" class="btn-soft">Report Lost</a>
+        <a href="/report/new?type=found" class="btn-soft">Report Found</a>
+        <a href="/report" class="btn-soft">Report View</a>
+      </div>
+    </div>
+    <div class="hero-mini-card">
+      <p class="text-xs text-slate-100/80 uppercase tracking-[0.12em]">Queue status</p>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.pending_claims }}">{{ .stats.pending_claims }}</div>
+          <p class="mini-label">Pending Claims</p>
+        </div>
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.pending_items }}">{{ .stats.pending_items }}</div>
+          <p class="mini-label">Pending Posts</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-2">
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.total_claims }}">{{ .stats.total_claims }}</div>
+          <p class="mini-label">Total Claims</p>
+        </div>
+        <div class="mini-stat dark">
+          <div class="mini-number" data-target="{{ .stats.total_found }}">{{ .stats.total_found }}</div>
+          <p class="mini-label">Found Items</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <p class="text-xs uppercase text-slate-500 font-semibold">Lost</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_lost }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Lost</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_lost }}</div>
+      <p class="stat-tile__hint">All lost reports</p>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <p class="text-xs uppercase text-slate-500 font-semibold">Found</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_found }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Found</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_found }}</div>
+      <p class="stat-tile__hint">All found reports</p>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <p class="text-xs uppercase text-slate-500 font-semibold">Claims</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.total_claims }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Claims</p>
+        <span class="trend up">live</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.total_claims }}</div>
+      <p class="stat-tile__hint">Total claims submitted</p>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <p class="text-xs uppercase text-slate-500 font-semibold">Pending Claims</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.pending_claims }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Pending Claims</p>
+        <span class="trend down">wait</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.pending_claims }}</div>
+      <p class="stat-tile__hint">Need your review</p>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-      <p class="text-xs uppercase text-slate-500 font-semibold">Pending Posts</p>
-      <p class="text-3xl font-semibold text-slate-900">{{ .stats.pending_items }}</p>
+    <div class="stat-tile">
+      <div class="stat-tile__top">
+        <p>Pending Posts</p>
+        <span class="trend down">wait</span>
+      </div>
+      <div class="stat-tile__num">{{ .stats.pending_items }}</div>
+      <p class="stat-tile__hint">Posts awaiting approval</p>
     </div>
   </div>
 
-  <div class="flex flex-wrap gap-3">
-    <a href="/admin/claims" class="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:-translate-y-[1px] transition">Manage Claims</a>
-    <a href="/admin/items" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow hover:-translate-y-[1px] transition">Manage Posts</a>
-    <a href="/report/new?type=lost" class="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:-translate-y-[1px] transition">Report Lost</a>
-    <a href="/report/new?type=found" class="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:-translate-y-[1px] transition">Report Found</a>
-    <a href="/report" class="bg-white border border-slate-300 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:-translate-y-[1px] transition">Report View</a>
-  </div>
-
-  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-    <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-slate-900">Recent Claims</h3>
+  <div class="panel table-panel">
+    <div class="panel-head">
+      <h3 class="panel-title">Recent Claims</h3>
+      <a href="/admin/claims" class="text-sky-600 font-semibold text-sm">View all</a>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 text-slate-600">
+      <table class="table-modern">
+        <thead>
           <tr>
-            <th class="px-4 py-3 text-left font-semibold">ID</th>
-            <th class="px-4 py-3 text-left font-semibold">Item</th>
-            <th class="px-4 py-3 text-left font-semibold">Claimant</th>
-            <th class="px-4 py-3 text-left font-semibold">Status</th>
-            <th class="px-4 py-3 text-left font-semibold">Date</th>
-            <th class="px-4 py-3 text-left font-semibold">Action</th>
+            <th>ID</th>
+            <th>Item</th>
+            <th>Claimant</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           {{ range .claims }}
-          <tr class="hover:bg-slate-50">
-            <td class="px-4 py-3">{{ .ID }}</td>
-            <td class="px-4 py-3">
+          <tr>
+            <td>{{ .ID }}</td>
+            <td>
               <div class="font-semibold text-slate-900">{{ .Item.Title }}</div>
-              <div class="text-xs text-slate-500">{{ .Item.Type }} • {{ .Item.Category }}</div>
+              <div class="text-xs text-slate-500">{{ .Item.Type }} - {{ .Item.Category }}</div>
             </td>
-            <td class="px-4 py-3">{{ .User.Name }}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">{{ .Status }}</span></td>
-            <td class="px-4 py-3">{{ .CreatedAt.Format "Jan 02, 2006" }}</td>
-            <td class="px-4 py-3"><a href="/admin/claims" class="text-sky-700 font-semibold text-sm">View</a></td>
+            <td>{{ .User.Name }}</td>
+            <td><span class="chip neutral">{{ .Status }}</span></td>
+            <td>{{ .CreatedAt.Format "Jan 02, 2006" }}</td>
+            <td><a href="/admin/claims" class="text-sky-700 font-semibold text-sm">View</a></td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td class="text-center text-slate-500" colspan="6">No claims yet.</td>
           </tr>
           {{ end }}
         </tbody>
@@ -75,3 +125,4 @@
   </div>
 </div>
 {{ end }}
+

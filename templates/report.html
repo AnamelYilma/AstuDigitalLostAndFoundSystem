@@ -2,77 +2,94 @@
 {{ template "layout.html" . }}
 
 {{ define "report_content" }}
-<div class="max-w-4xl mx-auto">
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-8">
-      <h2 class="text-2xl font-bold text-white">Report {{ if eq .type "lost" }}Lost{{ else }}Found{{ end }} Item</h2>
-      <p class="mt-2 text-slate-300">Help reunite someone with their belongings</p>
+<div class="space-y-6">
+  <div class="panel-hero gradient-hero">
+    <div class="space-y-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="badge-soft bg-white/15 text-white border border-white/20">
+          {{ if eq .type "lost" }}Lost{{ else }}Found{{ end }} report
+        </span>
+        <span class="pill">Admin verified</span>
+        <span class="pill">Photo friendly</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-white">Report your {{ if eq .type "lost" }}lost{{ else }}found{{ end }} item</h2>
+      <p class="text-slate-100/80 text-sm md:text-base">Give clear details so we can match people faster. Photos are required for found items.</p>
     </div>
+    <div class="hero-mini-card">
+      <p class="text-xs text-slate-100/80 uppercase tracking-[0.12em] mb-2">Tips</p>
+      <ul class="space-y-2 text-sm text-slate-100/80">
+        <li>- Use the exact campus location (building + floor).</li>
+        <li>- Mention unique marks: stickers, initials, scratches.</li>
+        <li>- Found items: upload at least one clear photo.</li>
+      </ul>
+    </div>
+  </div>
 
-    <div class="p-6">
+  <div class="panel">
+    <div class="panel-head">
+      <h3 class="panel-title">Item details</h3>
+    </div>
+    <div class="p-6 space-y-6">
       {{ if .error }}
-        <div class="mb-6 rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 flex items-start">
-          <svg class="h-5 w-5 text-rose-500 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span class="text-rose-700">{{ .error }}</span>
-        </div>
+      <div class="mb-2 rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-rose-700">
+        {{ .error }}
+      </div>
       {{ end }}
 
       <form method="POST" action="/report/new" enctype="multipart/form-data" class="space-y-6">
         <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
         <input type="hidden" name="type" value="{{ .type }}">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-grid two">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Category *</label>
-            <select name="category" required class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Category *</label>
+            <select name="category" required class="input-modern">
               <option value="">Select Category</option>
               {{ range .categories }}<option value="{{ . }}">{{ . }}</option>{{ end }}
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Item Name *</label>
-            <input type="text" name="title" required placeholder="e.g., HP Calculator" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Item Name *</label>
+            <input type="text" name="title" required placeholder="e.g., HP Calculator" class="input-modern">
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-grid two">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Color</label>
-            <select name="color" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Color</label>
+            <select name="color" class="input-modern">
               <option value="">Select Color</option>
               {{ range .colors }}<option value="{{ . }}">{{ . }}</option>{{ end }}
             </select>
-            <input type="text" name="color_other" placeholder="If other, specify color" class="w-full mt-2 px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <input type="text" name="color_other" placeholder="If other, specify color" class="input-modern mt-2">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Brand</label>
-            <input type="text" name="brand" placeholder="e.g., HP" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Brand</label>
+            <input type="text" name="brand" placeholder="e.g., HP" class="input-modern">
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="form-grid two">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Location *</label>
-            <select name="location" required class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Location *</label>
+            <select name="location" required class="input-modern">
               <option value="">Select Location</option>
               {{ range .locations }}<option value="{{ . }}">{{ . }}</option>{{ end }}
             </select>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Date Found/Lost</label>
-            <input type="date" name="date" value="{{ now }}" max="{{ now }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label class="label-strong">Date Found/Lost</label>
+            <input type="date" name="date" value="{{ now }}" max="{{ now }}" class="input-modern">
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
-          <textarea name="description" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent" placeholder="Describe your item in detail..."></textarea>
+          <label class="label-strong">Description</label>
+          <textarea name="description" rows="4" class="textarea-modern" placeholder="Describe your item in detail..."></textarea>
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">Photos {{ if eq .type "found" }}*(required){{ end }}</label>
+          <label class="label-strong">Photos {{ if eq .type "found" }}*(required){{ end }}</label>
           <div class="upload-widget">
             <label for="images" class="upload-dropzone flex flex-col items-center justify-center">
               <svg class="h-10 w-10 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -88,12 +105,13 @@
           </div>
         </div>
 
-        <div class="pt-6 flex flex-col sm:flex-row gap-3">
-          <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">Submit Report</button>
-          <a href="/report" class="flex-1 px-6 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition text-center">Cancel</a>
+        <div class="pt-4 flex flex-col sm:flex-row gap-3">
+          <button type="submit" class="btn-brand flex-1">Submit Report</button>
+          <a href="/report" class="btn-muted flex-1 text-center">Cancel</a>
         </div>
       </form>
     </div>
   </div>
 </div>
 {{ end }}
+

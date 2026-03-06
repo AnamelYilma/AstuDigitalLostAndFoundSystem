@@ -8,27 +8,28 @@
     {{ if .error }}
     <div class="error">{{ .error }}</div>
     {{ end }}
+    <div id="client-error" class="error hidden"></div>
 
-    <form method="POST" action="/register">
+    <form id="register-form" method="POST" action="/register" novalidate>
         <input type="hidden" name="csrf_token" value="{{ .csrf_token }}">
         <div class="form-group">
             <label>Full Name</label>
-            <input type="text" name="name" required placeholder="John Doe" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <input type="text" name="name" required placeholder="John Doe" value="{{ .name }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         </div>
 
         <div class="form-group">
-            <label>Student ID</label>
-            <input type="text" name="student_id" required placeholder="ugr/38923/18" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label>Student ID <span class="text-xs text-slate-500">(must start with "ugr/")</span></label>
+            <input type="text" name="student_id" required placeholder="ugr/38923/18" pattern="^ugr/.+" value="{{ .student_id }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         </div>
 
         <div class="form-group">
-            <label>Phone Number</label>
-            <input type="text" name="phone" required placeholder="09xxxxxxxx" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label>Phone Number <span class="text-xs text-slate-500">(09xxxxxxxx, +2519xxxxxxxx, or 2519xxxxxxxx)</span></label>
+            <input type="text" name="phone" required placeholder="09xxxxxxxx" pattern="^(09\\d{8}|\\+2519\\d{8}|2519\\d{8})$" value="{{ .phone }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         </div>
 
         <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required minlength="6" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+            <label>Password <span class="text-xs text-slate-500">(>6 chars with uppercase, lowercase & number)</span></label>
+            <input type="password" name="password" required minlength="7" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:border-transparent">
         </div>
 
         <button type="submit" class="btn btn-primary">Register</button>
@@ -36,4 +37,51 @@
 
     <p class="auth-link">Already have an account? <a href="/login">Login</a></p>
 </div>
+<script>
+(() => {
+    const form = document.getElementById('register-form');
+    const errorBox = document.getElementById('client-error');
+    const phonePattern = /^(09\d{8}|\+2519\d{8}|2519\d{8})$/;
+
+    function showError(messages) {
+        if (!messages.length) {
+            errorBox.classList.add('hidden');
+            errorBox.textContent = '';
+            return;
+        }
+        errorBox.textContent = messages.join(' - ');
+        errorBox.classList.remove('hidden');
+    }
+
+    form.addEventListener('submit', (e) => {
+        const messages = [];
+        const studentId = form.student_id.value.trim();
+        const phone = form.phone.value.trim();
+        const password = form.password.value;
+
+        if (!studentId.startsWith('ugr/')) {
+            messages.push('Student ID must start with "ugr/".');
+        }
+
+        if (!phonePattern.test(phone)) {
+            messages.push('Phone must be 09xxxxxxxx, +2519xxxxxxxx, or 2519xxxxxxxx.');
+        }
+
+        const hasUpper = /[A-Z]/.test(password);
+        const hasLower = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        if (password.length < 7 || !hasUpper || !hasLower || !hasNumber) {
+            messages.push('Password needs >6 chars with uppercase, lowercase, and number.');
+        }
+
+        if (messages.length) {
+            e.preventDefault();
+            showError(messages);
+        } else {
+            showError([]);
+        }
+    });
+})();
+</script>
 {{ end }}
+

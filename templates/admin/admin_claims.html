@@ -32,7 +32,7 @@
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Original Post</p>
                 <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ .Item.Title }}</h3>
-                <p class="text-sm text-slate-600">{{ .Item.Category }} • {{ .Item.Color }} • {{ .Item.Location }}</p>
+                <p class="text-sm text-slate-600">{{ .Item.Category }} - {{ .Item.Color }} - {{ .Item.Location }}</p>
               </div>
               <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-900 text-white">{{ .Item.ApprovalStatus }}</span>
             </div>
@@ -50,13 +50,13 @@
             </div>
 
             <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-slate-700">
-              <div><dt class="font-semibold text-slate-600">Brand</dt><dd>{{ if .Item.Brand }}{{ .Item.Brand }}{{ else }}—{{ end }}</dd></div>
-              <div><dt class="font-semibold text-slate-600">Date</dt><dd>{{ if .Item.Date }}{{ .Item.Date }}{{ else }}—{{ end }}</dd></div>
+              <div><dt class="font-semibold text-slate-600">Brand</dt><dd>{{ if .Item.Brand }}{{ .Item.Brand }}{{ else }}-{{ end }}</dd></div>
+              <div><dt class="font-semibold text-slate-600">Date</dt><dd>{{ if .Item.Date }}{{ .Item.Date }}{{ else }}-{{ end }}</dd></div>
               <div class="col-span-2"><dt class="font-semibold text-slate-600">Status</dt><dd class="capitalize">{{ .Item.Status }}</dd></div>
               <div class="col-span-2 flex items-center gap-3 flex-wrap">
                 <div>
                   <dt class="font-semibold text-slate-600">Posted By</dt>
-                  <dd>{{ .Item.User.Name }} ({{ .Item.User.StudentID }}) • {{ .Item.User.Phone }}</dd>
+                  <dd>{{ .Item.User.Name }} ({{ .Item.User.StudentID }}) - {{ .Item.User.Phone }}</dd>
                 </div>
                 <button type="button" class="px-3 py-1.5 rounded-md bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition copy-phone" data-phone="{{ .Item.User.Phone }}">Copy poster phone</button>
               </div>
@@ -70,7 +70,7 @@
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Requester</p>
                 <h3 class="text-lg font-bold text-slate-900 leading-tight">{{ .User.Name }}</h3>
-                <p class="text-sm text-slate-600">{{ .User.StudentID }} • {{ .User.Phone }}</p>
+                <p class="text-sm text-slate-600">{{ .User.StudentID }} - {{ .User.Phone }}</p>
               </div>
               <span class="text-xs text-slate-500">Updated {{ .UpdatedAt.Format "Jan 02, 2006" }}</span>
             </div>
@@ -83,7 +83,7 @@
             <div class="flex items-center gap-3 flex-wrap">
               <div class="text-sm text-slate-700">
                 <p class="font-semibold text-slate-600">Requester Contact</p>
-                <p>{{ .User.Name }} ({{ .User.StudentID }}) • {{ .User.Phone }}</p>
+                <p>{{ .User.Name }} ({{ .User.StudentID }}) - {{ .User.Phone }}</p>
               </div>
               <button type="button" class="px-3 py-1.5 rounded-md bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition copy-phone" data-phone="{{ .User.Phone }}">Copy requester phone</button>
             </div>
@@ -138,3 +138,4 @@
 })();
 </script>
 {{ end }}
+

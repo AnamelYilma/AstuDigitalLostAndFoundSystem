@@ -69,6 +69,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 			"title":            "Register",
 			"error":            err.Error(),
 			"content_template": "register_content",
+			"name":             name,
+			"student_id":       studentID,
+			"phone":            phone,
 		})
 		return
 	}
