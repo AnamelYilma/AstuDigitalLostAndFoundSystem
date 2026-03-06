@@ -91,14 +91,13 @@
         <div>
           <label class="label-strong">Photos {{ if eq .type "found" }}*(required){{ end }}</label>
           <div class="upload-widget">
-            <label for="images" class="upload-dropzone flex flex-col items-center justify-center">
+            <label for="images" class="upload-dropzone flex flex-col items-center justify-center cursor-pointer">
               <svg class="h-10 w-10 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <p class="text-sm font-semibold text-slate-700">Drag & drop images here</p>
-              <p class="text-xs text-slate-500">or</p>
-              <span data-upload-trigger class="mt-2 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow hover:bg-slate-800 transition">Choose files</span>
-              <p class="text-xs text-slate-500 mt-2">Max 5MB per file. JPG or PNG. Required for found items.</p>
+              <p class="text-xs text-slate-500 mt-1">or click to browse</p>
+              <p class="text-xs text-slate-500 mt-2">Max 5MB per file. JPG or PNG. Up to 5 images.</p>
             </label>
             <input id="images" type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }} class="file-input-hidden">
             <div class="upload-preview mt-4"></div>

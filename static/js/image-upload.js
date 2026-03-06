@@ -9,19 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selection = new DataTransfer();
 
-    const isLabel = dropZone.tagName && dropZone.tagName.toLowerCase() === 'label';
-    if (!isLabel) {
-        dropZone.addEventListener('click', () => fileInput.click());
-    }
-    const trigger = dropZone.querySelector('[data-upload-trigger]');
-    if (trigger) {
-        trigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            fileInput.click();
-        });
-    }
-
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -41,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dropZone.addEventListener('drop', handleDrop, false);
 
     // Handle file selection via input
-    fileInput.addEventListener('change', (e) => handleFiles(e, true), false);
+    fileInput.addEventListener('change', handleFiles, false);
 
     function preventDefaults(e) {
         e.preventDefault();
@@ -58,17 +45,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleDrop(e) {
         const dt = e.dataTransfer;
-        handleFiles({ target: { files: dt.files } }, true);
+        handleFiles({ target: { files: dt.files } });
     }
 
-    function handleFiles(e, reset = false) {
+    function handleFiles(e) {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        if (reset) {
-            selection = new DataTransfer();
-        }
+        selection = new DataTransfer();
 
+        let added = 0;
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
 
@@ -88,9 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             selection.items.add(file);
+            added++;
         }
 
-        syncSelection();
+        if (added > 0) {
+            syncSelection();
+        }
     }
 
     function syncSelection() {
@@ -101,6 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderPreview() {
         if (!uploadPreview) return;
         uploadPreview.innerHTML = '';
+
+        if (selection.files.length === 0) return;
 
         Array.from(selection.files).forEach(file => {
             const reader = new FileReader();
