@@ -9,7 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selection = new DataTransfer();
 
-    dropZone.addEventListener('click', () => fileInput.click());
+    const isLabel = dropZone.tagName && dropZone.tagName.toLowerCase() === 'label';
+    if (!isLabel) {
+        dropZone.addEventListener('click', () => fileInput.click());
+    }
+    const trigger = dropZone.querySelector('[data-upload-trigger]');
+    if (trigger) {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        });
+    }
 
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

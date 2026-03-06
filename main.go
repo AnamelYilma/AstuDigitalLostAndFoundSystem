@@ -8,6 +8,7 @@ import (
 	"lostfound/internal/handler"
 	"lostfound/internal/middleware"
 	"lostfound/internal/model"
+	"lostfound/internal/service"
 	"lostfound/pkg/database"
 	"lostfound/pkg/utils"
 	"net/http"
@@ -69,10 +70,16 @@ func main() {
 		}
 		csrfToken, _ := c.Get("csrf_token")
 		var unread int64
+		itemService := service.NewItemService()
+		authService := service.NewAuthService()
+		homeStats, _ := itemService.GetStats()
+		userCount := authService.TotalUsers()
 		c.HTML(200, "index.html", gin.H{
 			"title":            "ASTU Lost & Found",
 			"user":             user,
 			"unread_count":     unread,
+			"home_stats":       homeStats,
+			"user_count":       userCount,
 			"csrf_token":       csrfToken,
 			"content_template": "index_content",
 		})

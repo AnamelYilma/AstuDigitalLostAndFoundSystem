@@ -82,7 +82,7 @@
   {{ if .items }}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {{ range .items }}
-    <div class="card-modern">
+    <div class="card-modern flex flex-col h-full">
       <div class="relative block bg-slate-50 rounded-lg overflow-hidden">
         {{ if .Images }}
           {{ $count := len .Images }}
@@ -113,7 +113,7 @@
           </span>
         </div>
       </div>
-      <div class="p-5 space-y-3">
+      <div class="p-5 flex flex-col gap-3 flex-1">
         <h3 class="text-lg font-bold text-slate-900">{{ .Title }}</h3>
         <div class="space-y-2 text-sm text-slate-600">
           <div class="flex items-center gap-2">
@@ -140,7 +140,7 @@
             <span>{{ .Date }}</span>
           </div>
         </div>
-        <a href="/item/{{ .ID }}" class="btn-brand w-full text-center">View Details</a>
+        <a href="/item/{{ .ID }}" class="btn-brand w-full text-center mt-auto">View Details</a>
       </div>
     </div>
     {{ end }}

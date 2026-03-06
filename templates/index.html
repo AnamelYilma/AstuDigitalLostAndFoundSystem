@@ -55,15 +55,15 @@
         </div>
         <div class="mt-5 grid grid-cols-3 gap-3 text-center">
           <div class="mini-stat">
-            <div class="mini-number" data-target="1240">0</div>
+            <div class="mini-number" data-target="{{ .user_count }}">{{ if .user_count }}{{ .user_count }}{{ else }}0{{ end }}</div>
             <p class="mini-label">Registered Users</p>
           </div>
           <div class="mini-stat">
-            <div class="mini-number" data-target="328">0</div>
+            <div class="mini-number" data-target='{{ index .home_stats "total_found" }}'>{{ index .home_stats "total_found" }}</div>
             <p class="mini-label">Items Found</p>
           </div>
           <div class="mini-stat">
-            <div class="mini-number" data-target="412">0</div>
+            <div class="mini-number" data-target='{{ index .home_stats "total_lost" }}'>{{ index .home_stats "total_lost" }}</div>
             <p class="mini-label">Items Lost</p>
           </div>
         </div>
@@ -80,12 +80,7 @@
       <div>
         <p class="text-xs uppercase tracking-[0.2em] text-slate-200/70">Live Snapshot</p>
         <h2 class="text-3xl md:text-4xl font-bold">Campus signals at a glance</h2>
-        <p class="text-slate-200/80 mt-2">Track activity and jump in where it matters.</p>
-      </div>
-      <div class="flex gap-2 md:ml-auto">
-        <button class="filter-pill active">Today</button>
-        <button class="filter-pill">Week</button>
-        <button class="filter-pill">All</button>
+        <p class="text-slate-200/80 mt-2">Latest counts from approved posts and users.</p>
       </div>
     </div>
 
@@ -93,26 +88,23 @@
       <div class="stat-card">
         <div class="stat-top">
           <p class="stat-label">Registered users</p>
-          <span class="trend up">+12%</span>
         </div>
-        <div class="stat-number" data-target="1240">0</div>
-        <p class="stat-sub">New enrollments today</p>
+        <div class="stat-number" data-target="{{ .user_count }}">{{ if .user_count }}{{ .user_count }}{{ else }}0{{ end }}</div>
+        <p class="stat-sub">Total accounts</p>
       </div>
       <div class="stat-card">
         <div class="stat-top">
           <p class="stat-label">Items found</p>
-          <span class="trend up">+6%</span>
         </div>
-        <div class="stat-number" data-target="28">0</div>
-        <p class="stat-sub">Awaiting pickup</p>
+        <div class="stat-number" data-target='{{ index .home_stats "total_found" }}'>{{ index .home_stats "total_found" }}</div>
+        <p class="stat-sub">Approved found posts</p>
       </div>
       <div class="stat-card">
         <div class="stat-top">
           <p class="stat-label">Items reported lost</p>
-          <span class="trend down">-3%</span>
         </div>
-        <div class="stat-number" data-target="41">0</div>
-        <p class="stat-sub">Open cases</p>
+        <div class="stat-number" data-target='{{ index .home_stats "total_lost" }}'>{{ index .home_stats "total_lost" }}</div>
+        <p class="stat-sub">Approved lost posts</p>
       </div>
     </div>
 

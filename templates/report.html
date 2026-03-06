@@ -97,7 +97,7 @@
               </svg>
               <p class="text-sm font-semibold text-slate-700">Drag & drop images here</p>
               <p class="text-xs text-slate-500">or</p>
-              <span class="mt-2 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow hover:bg-slate-800 transition">Choose files</span>
+              <span data-upload-trigger class="mt-2 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold shadow hover:bg-slate-800 transition">Choose files</span>
               <p class="text-xs text-slate-500 mt-2">Max 5MB per file. JPG or PNG. Required for found items.</p>
             </label>
             <input id="images" type="file" name="images" accept="image/*" multiple {{ if eq .type "found" }}required{{ end }} class="file-input-hidden">

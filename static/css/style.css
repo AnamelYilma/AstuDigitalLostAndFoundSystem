@@ -1219,6 +1219,8 @@ main.landing {
     overflow: hidden;
     box-shadow: 0 14px 34px rgba(15,23,42,0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
 }
 .card-modern:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(15,23,42,0.12); }
 

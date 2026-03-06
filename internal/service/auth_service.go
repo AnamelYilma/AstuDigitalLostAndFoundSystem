@@ -77,6 +77,10 @@ func (s *AuthService) Register(name, studentID, phone, password string) (*model.
 	return user, err
 }
 
+func (s *AuthService) TotalUsers() int64 {
+	return s.userRepo.CountAll()
+}
+
 func validatePassword(password string) error {
 	if len(password) < 7 {
 		return errors.New("password must be more than 6 characters")
