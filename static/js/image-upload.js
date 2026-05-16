@@ -1,4 +1,3 @@
-// Drag and drop functionality for image uploads
 document.addEventListener('DOMContentLoaded', function() {
     const dropZone = document.querySelector('.upload-dropzone');
     const fileInput = document.getElementById('images');
@@ -9,13 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selection = new DataTransfer();
 
-    // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
         document.body.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Highlight drop area when item is dragged over it
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, highlight, false);
     });
@@ -24,10 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         dropZone.addEventListener(eventName, unhighlight, false);
     });
 
-    // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
 
-    // Handle file selection via input
     fileInput.addEventListener('change', handleFiles, false);
 
     function preventDefaults(e) {
