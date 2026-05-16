@@ -29,7 +29,6 @@ func renderHTML(c *gin.Context, status int, name string, data gin.H) {
 			}
 		}
 	}
-	// Provide common option lists if a template forgets to set them.
 	if _, exists := data["locations"]; !exists {
 		data["locations"] = service.ASTULocations()
 	}

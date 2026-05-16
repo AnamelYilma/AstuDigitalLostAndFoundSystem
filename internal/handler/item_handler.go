@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	// "lostfound/internal/middleware"
 	"lostfound/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -169,7 +168,6 @@ func (h *ItemHandler) ReportItem(c *gin.Context) {
 		}
 	}
 	if len(imagePaths) == 0 {
-		// Backward compatibility for single-image field name
 		if file, err := c.FormFile("image"); err == nil {
 			if len(imagePaths) >= maxUploadFiles {
 				renderHTML(c, http.StatusOK, "report.html", gin.H{
@@ -316,16 +314,12 @@ func (h *ItemHandler) Search(c *gin.Context) {
 			selectedDateTo = dateTo
 		}
 	}
-	// Default: only approved posts for everyone.
 	filters["approval_status"] = "approved"
-
-	// Admin can override via query param.
 	if status := c.Query("status"); status != "" && isAdmin {
 		if service.IsValidApprovalStatus(status) {
 			filters["approval_status"] = status
 		}
 	}
-
 	items, err := h.itemService.SearchItems(filters)
 	if err != nil {
 		items = []model.Item{}
@@ -411,7 +405,6 @@ func (h *ItemHandler) ClaimItem(c *gin.Context) {
 	itemID, _ := strconv.ParseUint(c.PostForm("item_id"), 10, 32)
 	description := strings.TrimSpace(c.PostForm("description"))
 
-	// Optional structured details to help admin match without exposing on cards.
 	claimLocation := strings.TrimSpace(c.PostForm("claim_location"))
 	claimCategory := strings.TrimSpace(c.PostForm("claim_category"))
 	claimColor := strings.TrimSpace(c.PostForm("claim_color"))
