@@ -26,7 +26,6 @@ func main() {
 	}
 	address := ":" + port
 
-// what is this types of wriiting and what he do by using gin method 
 	if strings.EqualFold(os.Getenv("GO_ENV"), "production") {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -43,13 +42,10 @@ func main() {
 			return time.Now().Format("2006-01-02")
 		},
 	}
-	//what is templet is module so if module what is this thinge s
-//when he create he give what is templ the he assign after that two time by another with or before use so what is purpose of that thinsg ,how it both usefull 
-	tmpl := template.New("").Funcs(funcMap)
+    
 
 	tmpl = template.Must(tmpl.ParseGlob("templates/*.html"))
 	tmpl = template.Must(tmpl.ParseGlob("templates/admin/*.html"))
-//look tmpl is look like route when i see but with sey get or post and whith pass in middelware and which pass in cookie checking how he seat  by r.sethtmlfile by they we is do run or just gvive vaule when we say "r."
 	r.SetHTMLTemplate(tmpl)
 
 	r.StaticFS("/static", http.Dir("static"))
@@ -61,16 +57,13 @@ func main() {
 	adminHandler := handler.NewAdminHandler()
 
 	r.GET("/", func(c *gin.Context) {
-		user, _ := c.Get("user")
-		if u, ok := user.(model.User); ok {
 			if u.Role == "admin" {
 				c.Redirect(303, "/admin/dashboard")
 				return
 			}
-			c.Redirect(303, "/dashboard")
 			return
 		}
-		//look when he give for varible  by say "c." what is mean he take form c or give for exmaple ofr this codition he creare a varibe then he say vaile c.get("csrf_token") so what is mean 
+        
 		csrfToken, _ := c.Get("csrf_token")
 		var unread int64
 		itemService := service.NewItemService()
@@ -87,8 +80,6 @@ func main() {
 			"content_template": "index_content",
 		})
 	})
-//after calling or seating to detetc why haveto group , am new fro this kind of things so teach me i want a know how system  
-	r.GET("/login", authHandler.ShowLogin)
 	r.POST("/login", authHandler.Login)
 	r.GET("/register", authHandler.ShowRegister)
 	r.POST("/register", authHandler.Register)
@@ -105,7 +96,6 @@ func main() {
 		protected.GET("/dashboard", itemHandler.Dashboard)
 		protected.GET("/report/new", itemHandler.ShowReportForm)
 		protected.POST("/report/new", itemHandler.ReportItem)
-		protected.POST("/claim", itemHandler.ClaimItem)
 		protected.GET("/notifications", itemHandler.ShowNotifications)
 		protected.POST("/notifications/read", itemHandler.MarkNotificationsRead)
 	}
@@ -129,8 +119,7 @@ func main() {
 
 }
 
-// this is end of code main place
-
+    
 func loadDotEnv(path string) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -241,7 +230,6 @@ func normalizeLegacyData() {
 }
 
 func enforceUserConstraints() {
-	// Keep old databases aligned with current model rules.
 	database.DB.Exec("DROP INDEX IF EXISTS idx_users_student_id")
 	database.DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_users_student_id_lower ON users (LOWER(student_id))")
 	database.DB.Exec("ALTER TABLE users ALTER COLUMN student_id SET NOT NULL")
