@@ -33,7 +33,6 @@ func InitDB() {
 		)
 	}
 
-	// Log (safely hide password)
 	logDSN := hidePassword(dsn)
 	log.Printf("Connecting with: %s", logDSN)
 
@@ -54,33 +53,26 @@ func InitDB() {
 	log.Println("✅ Database connected successfully")
 }
 
-// FIX RENDER URL - CORRECTED VERSION
 func fixRenderURL(url string) string {
-	// 1. Replace postgresql:// with postgres:// for GORM compatibility
 	if strings.HasPrefix(url, "postgresql://") {
 		url = strings.Replace(url, "postgresql://", "postgres://", 1)
 	}
 
-	// 2. Ensure port 5432 is included if not present
 	if strings.Contains(url, "postgres://") && !strings.Contains(url, ":5432") {
-		// Check if port is missing after @
 		parts := strings.SplitN(url, "@", 2)
 		if len(parts) == 2 {
 			hostPart := parts[1]
-			// Split by / to get host:port
 			hostPortDb := strings.SplitN(hostPart, "/", 2)
 			if len(hostPortDb) == 2 {
 				hostPort := hostPortDb[0]
 				dbName := hostPortDb[1]
 				if !strings.Contains(hostPort, ":") {
-					// Add port 5432
 					url = parts[0] + "@" + hostPort + ":5432/" + dbName
 				}
 			}
 		}
 	}
 
-	// 3. Add sslmode=require if not present (Render PostgreSQL requires SSL)
 	if !strings.Contains(url, "sslmode=") {
 		if strings.Contains(url, "?") {
 			url += "&sslmode=require"
@@ -92,7 +84,6 @@ func fixRenderURL(url string) string {
 	return url
 }
 
-// HIDE PASSWORD IN LOGS - SIMPLIFIED
 func hidePassword(dsn string) string {
 	if strings.Contains(dsn, "postgres://") {
 		return "postgres://****:****@" + strings.SplitN(dsn, "@", 2)[1]
