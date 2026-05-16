@@ -35,7 +35,6 @@ func (s *AuthService) Register(name, studentID, phone, password string) (*model.
 		return nil, errors.New("student ID is required")
 	}
 	
-	// Validate student ID format (must start with "ugr/")
 	if !strings.HasPrefix(studentID, "ugr/") {
 		return nil, errors.New("student ID must start with 'ugr/' (e.g., ugr/12345/18)")
 	}
@@ -44,12 +43,10 @@ func (s *AuthService) Register(name, studentID, phone, password string) (*model.
 		return nil, errors.New("phone number is required")
 	}
 	
-	// Validate Ethiopian phone number
 	if err := validateEthiopianPhone(phone); err != nil {
 		return nil, err
 	}
 	
-	// Validate password
 	if err := validatePassword(password); err != nil {
 		return nil, err
 	}
@@ -114,20 +111,16 @@ func validatePassword(password string) error {
 func validateEthiopianPhone(phone string) error {
 	phone = strings.TrimSpace(phone)
 	
-	// Pattern 1: 09xxxxxxxx (10 digits starting with 09)
 	pattern1 := regexp.MustCompile(`^09\d{8}$`)
 	
-	// Pattern 2: +2519xxxxxxxx (13 chars: +2519 followed by 8 digits)
 	pattern2 := regexp.MustCompile(`^\+2519\d{8}$`)
 	
-	// Pattern 3: 2519xxxxxxxx (12 digits: 2519 followed by 8 digits)
 	pattern3 := regexp.MustCompile(`^2519\d{8}$`)
 	
 	if pattern1.MatchString(phone) || pattern2.MatchString(phone) || pattern3.MatchString(phone) {
 		return nil
 	}
 	
-	// Provide helpful error message
 	if len(phone) < 10 {
 		return errors.New("phone number is too short. Use 09xxxxxxxx, +2519xxxxxxxx, or 2519xxxxxxxx")
 	} else if len(phone) > 13 {

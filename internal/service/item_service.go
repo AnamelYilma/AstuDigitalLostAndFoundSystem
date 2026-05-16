@@ -43,14 +43,12 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
 	filePath := filepath.Join(uploadDir, filename)
 
-	// Open the uploaded file
 	src, err := file.Open()
 	if err != nil {
 		return "", err
 	}
 	defer src.Close()
-
-	// Validate actual MIME type
+    
 	head := make([]byte, 512)
 	n, _ := src.Read(head)
 	mime := mimetype.Detect(head[:n])
@@ -61,14 +59,12 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 		_, _ = seeker.Seek(0, io.SeekStart)
 	}
 
-	// Create destination file
 	dst, err := os.Create(filePath)
 	if err != nil {
 		return "", err
 	}
 	defer dst.Close()
-
-	// Copy the file
+    
 	if _, err = io.Copy(dst, src); err != nil {
 		return "", err
 	}
@@ -120,7 +116,7 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 		return nil, err
 	}
 
-	// Notify admins to review the new post (pending).
+    
 	_ = s.notifyAdmins(
 		"New Post Pending Approval",
 		fmt.Sprintf("A %s item was submitted and needs review.\n\nTitle: %s\nCategory: %s\nLocation: %s\nReported by: %d (user id)\n\nOpen Admin > Items to approve/reject.",
@@ -181,7 +177,6 @@ func (s *ItemService) CreateClaim(itemID, userID uint, description string) error
 		return err
 	}
 
-	// Notify admins of the incoming request so they don't miss approvals.
 	requestTypeLabel := "Claim Request"
 	if requestType == "found_match_request" {
 		requestTypeLabel = "Found Match Request"
