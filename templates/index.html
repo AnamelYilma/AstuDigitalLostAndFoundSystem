@@ -1,8 +1,5 @@
-<!-- templates/index.html -->
 {{ template "layout.html" . }}
-
 {{ define "index_content" }}
-<!-- Section 1: Hero -->
 <section class="guest-section guest-hero vh-100 flex items-center relative overflow-hidden">
   <div class="guest-blob blob-one"></div>
   <div class="guest-blob blob-two"></div>
@@ -72,7 +69,6 @@
   </div>
 </section>
 
-<!-- Section 2: Snapshot -->
 <section class="guest-section guest-snapshot vh-100 relative overflow-hidden text-white">
   <div class="guest-blob blob-four"></div>
   <div class="w-full max-w-6xl mx-auto px-6 md:px-10 py-16 flex flex-col gap-10 relative z-10">
@@ -115,7 +111,6 @@
   </div>
 </section>
 
-<!-- Section 3: About & Quick Links -->
 <section class="guest-section guest-about vh-100 bg-slate-50 text-slate-900">
   <div class="w-full max-w-6xl mx-auto px-6 md:px-10 py-16 grid md:grid-cols-2 gap-10 items-center">
     <div class="space-y-5">
@@ -176,8 +171,6 @@
       </div>
     </div>
   </div>
-</section>
-
 <script>
 (() => {
   const ease = t => 1 - Math.pow(1 - t, 3);
