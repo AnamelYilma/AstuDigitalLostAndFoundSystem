@@ -11,7 +11,6 @@ import (
 	"unicode"
 )
 
-
 type AuthService struct {
 	userRepo *repository.UserRepository
 }
@@ -26,27 +25,27 @@ func (s *AuthService) Register(name, studentID, phone, password string) (*model.
 	name = strings.TrimSpace(name)
 	studentID = strings.ToLower(strings.TrimSpace(studentID))
 	phone = strings.TrimSpace(phone)
-	
+
 	if name == "" {
 		return nil, errors.New("name is required")
 	}
-	
+
 	if studentID == "" {
 		return nil, errors.New("student ID is required")
 	}
-	
+
 	if !strings.HasPrefix(studentID, "ugr/") {
 		return nil, errors.New("student ID must start with 'ugr/' (e.g., ugr/12345/18)")
 	}
-	
+
 	if phone == "" {
 		return nil, errors.New("phone number is required")
 	}
-	
+
 	if err := validateEthiopianPhone(phone); err != nil {
 		return nil, err
 	}
-	
+
 	if err := validatePassword(password); err != nil {
 		return nil, err
 	}
@@ -82,7 +81,7 @@ func validatePassword(password string) error {
 	if len(password) < 7 {
 		return errors.New("password must be more than 6 characters")
 	}
-	
+
 	var hasUpper, hasLower, hasNumber bool
 	for _, char := range password {
 		switch {
@@ -94,7 +93,7 @@ func validatePassword(password string) error {
 			hasNumber = true
 		}
 	}
-	
+
 	if !hasUpper {
 		return errors.New("password needs an uppercase letter (A-Z)")
 	}
@@ -104,23 +103,23 @@ func validatePassword(password string) error {
 	if !hasNumber {
 		return errors.New("password needs a number (0-9)")
 	}
-	
+
 	return nil
 }
 
 func validateEthiopianPhone(phone string) error {
 	phone = strings.TrimSpace(phone)
-	
+
 	pattern1 := regexp.MustCompile(`^09\d{8}$`)
-	
+
 	pattern2 := regexp.MustCompile(`^\+2519\d{8}$`)
-	
+
 	pattern3 := regexp.MustCompile(`^2519\d{8}$`)
-	
+
 	if pattern1.MatchString(phone) || pattern2.MatchString(phone) || pattern3.MatchString(phone) {
 		return nil
 	}
-	
+
 	if len(phone) < 10 {
 		return errors.New("phone number is too short. Use 09xxxxxxxx, +2519xxxxxxxx, or 2519xxxxxxxx")
 	} else if len(phone) > 13 {
@@ -138,7 +137,7 @@ func validateEthiopianPhone(phone string) error {
 		}
 		return errors.New("phone with 2519 must be exactly 12 digits (2519 + 8 digits)")
 	}
-	
+
 	return errors.New("phone format not recognized. Use 09xxxxxxxx, +2519xxxxxxxx, or 2519xxxxxxxx")
 }
 
