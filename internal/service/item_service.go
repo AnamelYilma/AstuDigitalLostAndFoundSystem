@@ -48,7 +48,7 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 	defer src.Close()
-    
+
 	head := make([]byte, 512)
 	n, _ := src.Read(head)
 	mime := mimetype.Detect(head[:n])
@@ -64,7 +64,7 @@ func (s *ItemService) SaveImage(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 	defer dst.Close()
-    
+
 	if _, err = io.Copy(dst, src); err != nil {
 		return "", err
 	}
@@ -116,7 +116,6 @@ func (s *ItemService) CreateItem(userID uint, itemType, title, category, color, 
 		return nil, err
 	}
 
-    
 	_ = s.notifyAdmins(
 		"New Post Pending Approval",
 		fmt.Sprintf("A %s item was submitted and needs review.\n\nTitle: %s\nCategory: %s\nLocation: %s\nReported by: %d (user id)\n\nOpen Admin > Items to approve/reject.",
