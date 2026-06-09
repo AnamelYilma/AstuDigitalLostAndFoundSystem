@@ -25,7 +25,7 @@ func main() {
 		port = "8080"
 	}
 	address := ":" + port
-
+ 
 	if strings.EqualFold(os.Getenv("GO_ENV"), "production") {
 		gin.SetMode(gin.ReleaseMode)
 	}
